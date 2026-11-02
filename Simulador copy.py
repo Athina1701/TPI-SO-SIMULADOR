@@ -26,7 +26,7 @@ memoria = [cantDisponible, ]
 #En si, inicializar de esta forma no hace falta, lo hago para tener en cuenta las estrcturas a usar.
 nuevos = []
 listos = []
-listSuspendidos = []
+listosSuspendidos = []
 terminados = []
 
 cantProcesos = 0
@@ -66,12 +66,15 @@ def cargarNuevos (nombreArchivo):
           continue #esto por si hay un renglon vacio.
 
   #ordena procesos. ordeno la cola de nuevos por TA, si hay dos con TA iguales, ordeno por id.
-#sorted(student_objects, key=attrgetter('grade', 'age'))
     nuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona. 
 
+def EliminarDeCola(cola, fProceso): #recibe la cola y el proceso a eliminar.
+   # no creo que pueda hacer uno general para todas las colas
+   cola.remove(fProceso) #elimina el proceso puntual de la cola que se le pase. 
+   #NOta: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola".
 
-def mostrarCola(cola): #voy a tratar de hacer una sola funcion que reciba cualquiera de las colas, en vez de hacer una por cada cola.
-
+def MostrarCola(cola): #voy a tratar de hacer una sola funcion que reciba cualquiera de las colas, en vez de hacer una por cada cola.
+#hacer
   
   
   pass #hay que hacerlo de forma tableada.
@@ -88,25 +91,46 @@ class espacioMemoria:
 espacioInicial = espacioMemoria(1, 0, 450, None) # al principio no hay proceso asignado, entonces es None.
 memoria = [espacioInicial]
 
-def calcularEspacioDisponible(fProceso): #sinceramente no se como hacer.
+def CalcularEspacioDisponible(fProceso): #sinceramente no se como hacer.
   #si el proceso cabe en la memoria, el tema es que la memoria quiza no tenga espacios disponibles continuos.
   # yo tendria que tomar cada fin de proceso y el comienzo del proximo, para que ver si es que realmente hay espacio.
 
-  pass
+  pass  #hacer
 
+def CargarListosYSuspendidos(fProceso, colaAnterior): #hacer
+  fProceso.estado = "suspendido"
+  listosSuspendidos.append(fProceso)
+  EliminarDeCola(colaAnterior, fProceso)
 
-def CargarListos():
-  pass #se actualliza estado del proceso a listo
+def CargarListos(fProceso, colaActual):
+       #se actualliza estado del proceso a listo
         #a tener en cuenta: cargar los procesos segun TI.
         # quiza deba hacer una funcion aparte para eso
+  hayEspacio = CalcularEspacioDisponible() #retorna v o f.
+  if hayEspacio:
+    #cargar a listos
+    fProceso.estado = "listo"
+    esMayor = True
+    for proc in listos:
+      if (fProceso.TI < proc.TI): #el proceso a cargar tiene menor timepo de irrupción
+        indice = listos.index(proc) 
+        listos.insert(indice, fProceso)
+        esMayor = False
+        break
+    if esMayor: 
+      listos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
 
+    EliminarDeCola(colaActual, fProceso) #elimina de la cola de nuevos, porque ya se cargo a listos o suspendidos.
+      #con "cola actual" me refiero a la cola de la que se elimina, puede ser cola de ejecucion, de nuevos, de suspendidos.
+  #no hay espacio: 
+  elif (fProceso.estado != "suspendido"): #si es igual a suspendido es pq ya estaba en la lista de suspendidos. no hace falta volvcer a ponerlo.
+    #cargar en suspendidos, solo si es que NO estaba en suspendidos
+    CargarListosYSuspendidos(fProceso, colaActual)
 
-def cargarListosYSuspendidos():
-  pass
 
 #def seleccionarProcesoSRTF(): # no hace falta porque ya esta ordenada la cola, o eso deberia. El orden se debe hacer en la cola de listos.
 
-def EjecutarProceso():
+def EjecutarProceso(): #hacer
   pass #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
 
 

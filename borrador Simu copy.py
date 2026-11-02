@@ -123,3 +123,8 @@ if memoria[0].procesoAsignado is None: #no hay proceso asignado.
     
 
 """
+
+
+#ordena procesos. ordeno la cola de nuevos por TA, si hay dos con TA iguales, ordeno por id.
+#sorted(student_objects, key=attrgetter('grade', 'age'))
+nuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona.
