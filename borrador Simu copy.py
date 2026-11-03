@@ -128,3 +128,58 @@ if memoria[0].procesoAsignado is None: #no hay proceso asignado.
 #ordena procesos. ordeno la cola de nuevos por TA, si hay dos con TA iguales, ordeno por id.
 #sorted(student_objects, key=attrgetter('grade', 'age'))
 nuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona.
+
+
+# f"{...}" permite meter variables dentro del text.
+
+print(f"{p.id:<5}")
+"""p.id va a entrar en el texto
+:<5 = ocupa al menos 5 caracteres
+si el valor tiene menos de 5, lo rellena con espacios a la derecha"""
+
+
+#---------------- OTRA FORMA DE HACER LA MEMORIA: LISTA DE DICCIONARIOS:
+memoria = []
+particionInicial = { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None }
+memoria.append(particionInicial)
+#pero me parece que es mas facil de manejar si es una clase. A ver:
+
+# t= 1, p1 = 100 k →
+# ahora es 0 el indice, pero la idea es ir iterando sobre memoria hasta encontrar espacio.
+# Nota: usar get para toma valores del diccionario: apellido = usuario.get("apellido") # Devuelve None
+
+if memoria[0].get("procesoAsignado") is None: #no hay proceso asignado a la particion
+  if proceso.memoria < memoria[0].get("tamanio"):
+
+    #deberia ponerle otro nombre a particionAnterior, pq me refiero a a la particion la cual se agrega un procso, no es exactamente la anterior, aumque si tiene datos de la vieja, como el id y el cmoienzo.
+    particionAnterior = memoria[0] #me quedo con el id y el comienzo, el resto de los datos actualizo:
+    particionAnterior["tamanio"] = proceso.memoria
+    particionAnterior["procesoAsignado"] = proceso
+    particionNueva = { "id": 2, "comienzo": memoria[0].get("comienzo") + proceso.memoria, "tamanio": memoria[0].get("tamanio") - proceso.memoria, "procesoAsignado": None }
+
+# ahora con iteracion:
+
+def CargarEnMemoria(proceso):
+  if len(memoria) > 0: #por las dudas no sea una lista vacia. pero capaz no sea necesario
+    for i in range(len(memoria)):
+      if memoria[i].get("procesoAsignado") is None: #no hay proceso asignado a la particion
+        if proceso.memoria <= memoria[i].get("tamanio"):
+          # de memoria[i] me quedo con el id y el comienzo, el resto de los datos actualizo:
+          memoria[i]["tamanio"] = proceso.memoria
+          memoria[i]["procesoAsignado"] = proceso.id
+          particionNueva = { "id": (i+1), "comienzo": memoria[i].get("comienzo") + proceso.memoria, "tamanio": memoria[i].get("tamanio") - proceso.memoria, "procesoAsignado": None }
+          memoria.append(particionNueva)
+
+          return True #manda un mensaje de que el proceso se cargo en memoria.
+    return False #no hubo espacio, por tanto no se cargó.
+
+
+"""
+#borrador anterior: no me parece necesario árticionAnterior
+  
+  #deberia ponerle otro nombre a particionAnterior, pq me refiero a a la particion la cual se agrega un procso, no es exactamente la anterior, aumque si tiene datos de la vieja, como el id y el cmoienzo.
+  particionAnterior = memoria[i] #me quedo con el id y el comienzo, el resto de los datos actualizo:
+          particionAnterior["tamanio"] = proceso.memoria
+          particionAnterior["procesoAsignado"] = proceso.id
+          particionNueva = { "id": 2, "comienzo": memoria[i].get("comienzo") + proceso.memoria, "tamanio": memoria[i].get("tamanio") - proceso.memoria, "procesoAsignado": None }
+          memoria.append(particionNueva)"""

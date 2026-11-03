@@ -28,9 +28,10 @@ nuevos = []
 listos = []
 listosSuspendidos = []
 terminados = []
+#cola de ejecucion, lo aplico como un diccionario:
+ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
 
 cantProcesos = 0
-finArch = False
 
 def existeArchivo(nombreArchivo):
   try:
@@ -71,16 +72,30 @@ def cargarNuevos (nombreArchivo):
 def EliminarDeCola(cola, fProceso): #recibe la cola y el proceso a eliminar.
    # no creo que pueda hacer uno general para todas las colas
    cola.remove(fProceso) #elimina el proceso puntual de la cola que se le pase. 
-   #NOta: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola".
+   #NOTA: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola".
 
-def MostrarCola(cola): #voy a tratar de hacer una sola funcion que reciba cualquiera de las colas, en vez de hacer una por cada cola.
-#hacer
-  
-  
-  pass #hay que hacerlo de forma tableada.
+texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos', etc."
 
+def MostrarCola(cola, texto): #voy a tratar de hacer una sola funcion que reciba cualquiera de las colas, en vez de hacer una por cada cola.
+  print(texto, "\n")
+  print("IDProcess | TA | TI | memoria | estado \n") #por el momento, le dejo 'estado', para ver si hay errores.
+  for proc in cola:
+    print(proc.id, " | ", proc.TA, " | ", proc.TI, " | ", proc.memoria, " | ", proc.estado)  
+  #hay que hacerlo de forma tableada.
+"""------------- la solucion de la IA para la tabla:
+def MostrarCola(cola):
+    print(f"{'ID':<5} | {'TA':>4} | {'TI':>4} | {'Memoria':>8} | {'Estado':<10}")
+    print("-" * 50)
 
-# por el momento, la estructura de la memoria es esta. respondiendo a la pregunta de def calcularEsapcio.
+    for p in cola:
+        print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.memoria:>8} | {p.estado:<10}")
+
+  #lo que hace el ''TA':>4' es rellenar con espacios vacios a la izq, si el texto tiene menos de 4 caracteres.
+  #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
+  """
+
+#---------------------------------
+#  por el momento, la estructura de la memoria es esta. respondiendo a la pregunta de def calcularEsapcio.
 class espacioMemoria:
   def __init__(self, id, comienzo, tamaño, procesoAsignado):
     self.id = id
@@ -90,34 +105,41 @@ class espacioMemoria:
 
 espacioInicial = espacioMemoria(1, 0, 450, None) # al principio no hay proceso asignado, entonces es None.
 memoria = [espacioInicial]
+#-----------------------------------
 
-def CalcularEspacioDisponible(fProceso): #sinceramente no se como hacer.
+
+def CargarEnMemoria(fProceso): #sinceramente no se como hacer.
   #si el proceso cabe en la memoria, el tema es que la memoria quiza no tenga espacios disponibles continuos.
   # yo tendria que tomar cada fin de proceso y el comienzo del proximo, para que ver si es que realmente hay espacio.
 
   pass  #hacer
+#CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
+      #  OJO: contiguas: si habia una libre de direccion 50 a 100, y justo se liber aun proceso qu eocupaba de 100 a 130, unir esos espacios: de 50 a 130.
 
-def CargarListosYSuspendidos(fProceso, colaAnterior): #hacer
+def LiberarMemoria():
+  pass
+
+def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   fProceso.estado = "suspendido"
-  listosSuspendidos.append(fProceso)
-  EliminarDeCola(colaAnterior, fProceso)
+  listosSuspendidos.append(fProceso) #este lo agrega al final de la cola, no se si seria mejor acomodar segun TI.
+  EliminarDeCola(colaActual, fProceso)
 
 def CargarListos(fProceso, colaActual):
        #se actualliza estado del proceso a listo
         #a tener en cuenta: cargar los procesos segun TI.
         # quiza deba hacer una funcion aparte para eso
-  hayEspacio = CalcularEspacioDisponible() #retorna v o f.
+  hayEspacio = CargarEnMemoria(fProceso) #retorna v o f.
   if hayEspacio:
     #cargar a listos
     fProceso.estado = "listo"
-    esMayor = True
+    mayorTI = True
     for proc in listos:
-      if (fProceso.TI < proc.TI): #el proceso a cargar tiene menor timepo de irrupción
+      if (fProceso.TI < proc.TI): #el proceso nuevo a cargar tiene menor timepo de irrupción
         indice = listos.index(proc) 
         listos.insert(indice, fProceso)
-        esMayor = False
+        mayorTI = False
         break
-    if esMayor: 
+    if mayorTI: 
       listos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
 
     EliminarDeCola(colaActual, fProceso) #elimina de la cola de nuevos, porque ya se cargo a listos o suspendidos.
@@ -131,9 +153,16 @@ def CargarListos(fProceso, colaActual):
 #def seleccionarProcesoSRTF(): # no hace falta porque ya esta ordenada la cola, o eso deberia. El orden se debe hacer en la cola de listos.
 
 def EjecutarProceso(): #hacer
-  pass #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
+  #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
+  if ejecucion ["enUso"] == False: #no hay proecsos ejecutandose.
+    pass
 
 
+def suspenderEjecucion(fProceso): #hacer
+  pass #se usaria para sacarlo de la cola, actualizar estado.
+
+def TerminarProceso(fProceso): #hacer
+  pass #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
 
 
