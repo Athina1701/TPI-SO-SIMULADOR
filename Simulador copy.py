@@ -1,3 +1,7 @@
+
+#ARCHIVO PRINCIPAL: SIMULADOR 
+#Esta muy cargaado de anotaciones, al terminarlo, habria que "limpiarlo"
+
 """
 TA: tiempo de arribo
 TI: tiempo de irrupcion
@@ -94,30 +98,45 @@ def MostrarCola(cola):
   #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
   """
 
-#---------------------------------
-#  por el momento, la estructura de la memoria es esta. respondiendo a la pregunta de def calcularEsapcio.
-class espacioMemoria:
-  def __init__(self, id, comienzo, tamaño, procesoAsignado):
-    self.id = id
-    self.comienzo = comienzo
-    self.tamaño = tamaño
-    self.procesoAsignado = procesoAsignado # si no hay proceso asignado, es None. Entonces pregunto por none. Asi no creo un campo extra de libre/ocupado.
+#---------------------------------------------------------------
+# Por el momento, la memoria se maneja d esta forma. Es lo que se me ocurrió
+# Es una lista de diccionarios. Las particiones son los diccionarios
 
-espacioInicial = espacioMemoria(1, 0, 450, None) # al principio no hay proceso asignado, entonces es None.
-memoria = [espacioInicial]
+memoria = []
+particionInicial = { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None }
+#id no me parece tan necesario, ademas hay que revisar en el cargarmemoria, porque se repiten los id.
+memoria.append(particionInicial)
+disponibleEnMemoria = 450 #este debo ir disminuyendolo, y aumentarlo al liberar memoria.
+
 #-----------------------------------
 
+# Por el momento, la memoria se maneja d esta forma. Es lo que se me ocurrió
+def CargarEnMemoria(proceso, disponibleEnMemoria):
+  logitudMemoria = len(memoria) 
+  if logitudMemoria > 0: #por las dudas no sea una lista vacia. pero capaz no sea necesario
+    for i in range(logitudMemoria):  #itero sobre cada particion, para saber cual esta libre
+      if memoria[i].get("procesoAsignado") is None: #no hay proceso asignado a la particion
+        if proceso.tamano <= memoria[i].get("tamanio"):
+            disponibleEnMemoria =  disponibleEnMemoria - proceso.tamano 
+            if disponibleEnMemoria != 0: #o sea, que aun hay espacio en memoria . Si dispoMemoria =  0, ya no hay lugar. 
+              particionNueva = { "id": (logitudMemoria+1), "comienzo": memoria[i].get("comienzo") + proceso.tamano, "tamanio": disponibleEnMemoria , "procesoAsignado": None }
+              memoria.append(particionNueva)
 
-def CargarEnMemoria(fProceso): #sinceramente no se como hacer.
-  #si el proceso cabe en la memoria, el tema es que la memoria quiza no tenga espacios disponibles continuos.
-  # yo tendria que tomar cada fin de proceso y el comienzo del proximo, para que ver si es que realmente hay espacio.
+            # de memoria[i] (o sea, la particion que esta libre y el cual entra el proceso) me quedo con el id y el comienzo, el resto de los datos actualizo:
+            memoria[i]["tamanio"] = proceso.tamano
+            memoria[i]["procesoAsignado"] = proceso.id
 
-  pass  #hacer
+            return True, disponibleEnMemoria #manda un mensaje de que el proceso se cargo en memoria.
+    return False, disponibleEnMemoria #no hubo espacio, por tanto no se cargó.
+
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
-      #  OJO: contiguas: si habia una libre de direccion 50 a 100, y justo se liber aun proceso qu eocupaba de 100 a 130, unir esos espacios: de 50 a 130.
 
-def LiberarMemoria():
-  pass
+def LiberarMemoria(proceso, disponibleEnMemoria):
+
+
+  pass #hacer
+
+
 
 def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   fProceso.estado = "suspendido"
@@ -154,7 +173,7 @@ def CargarListos(fProceso, colaActual):
 
 def EjecutarProceso(): #hacer
   #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
-  if ejecucion ["enUso"] == False: #no hay proecsos ejecutandose.
+  if ejecucion["enUso"] == False: #no hay proecsos ejecutandose.
     pass
 
 

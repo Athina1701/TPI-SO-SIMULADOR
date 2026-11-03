@@ -16,7 +16,8 @@ particionInicial = { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": 
 memoria.append(particionInicial)
 
 
-
+def limpiarMemoria(): # me refiero a unir particiones libres contiguas.
+  pass
 
 def CargarEnMemoria(proceso, disponibleEnMemoria):
   logitudMemoria = len(memoria) #itero sobre cada particion 
@@ -36,7 +37,8 @@ def CargarEnMemoria(proceso, disponibleEnMemoria):
             return True, disponibleEnMemoria #manda un mensaje de que el proceso se cargo en memoria.
     return False, disponibleEnMemoria #no hubo espacio, por tanto no se cargó.
 
-"main:"
+
+#main: #esto es para saber si funciona
 
 p1 = Proceso("p1", 1, 3, 100, "nuevo")
 p2 = Proceso("p2", 1, 6, 350, "nuevo")
@@ -45,11 +47,13 @@ p3 = Proceso("p3", 2, 4, 70, "nuevo")
 procesos = [ p1 ,p2, p3]
 tamanoDisponible = 450
 
+
 estorbo =  { "id": 3, "comienzo": 90 , "tamanio": 100, "procesoAsignado": "p7" }
 memoria.append(estorbo)
 tamanoDisponible = tamanoDisponible - estorbo["tamanio"]
 """es para probar que tal funciona"""
 
+#esto es para saber si funciona
 for p in procesos:
   hayEspacio, tamanoDisponible = CargarEnMemoria(p, tamanoDisponible )
   print("cargó: ", hayEspacio)

@@ -1,4 +1,10 @@
+
+
+#ESTE ARCHIVO ES PARA IR COLOCANDO LOS BLOQUES DE CODIGO QUE NO NECESITO EN EL ARCHIVO PRINCIPAL. 
+#ES DE CODIGOS BORRADORES, Y ANOTACIONES VARIAS PARA NO SOBRECARGAR EL PPAL. NO EJECUTAR PORQUE ESTA LLLENO DE PROBLEMAS. PARA ESO, EL ARCHIVO "PRUEBAS"
+
 """
+
 El simulador deberá presentar como salida la siguiente información:
  El estado del procesador (proceso que se encuentra corriendo en ese instante)
  La tabla de particiones de memoria, la cual deberá contener (Id de partición, dirección de comienzo de
@@ -183,3 +189,27 @@ def CargarEnMemoria(proceso):
           particionAnterior["procesoAsignado"] = proceso.id
           particionNueva = { "id": 2, "comienzo": memoria[i].get("comienzo") + proceso.memoria, "tamanio": memoria[i].get("tamanio") - proceso.memoria, "procesoAsignado": None }
           memoria.append(particionNueva)"""
+
+
+"""
+---------------------esto lo saqué el archivo ppal. No es necesario. despues lo borro
+
+#  por el momento, la estructura de la memoria es esta. respondiendo a la pregunta de def calcularEsapcio.
+class espacioMemoria:
+  def __init__(self, id, comienzo, tamaño, procesoAsignado):
+    self.id = id
+    self.comienzo = comienzo
+    self.tamaño = tamaño
+    self.procesoAsignado = procesoAsignado # si no hay proceso asignado, es None. Entonces pregunto por none. Asi no creo un campo extra de libre/ocupado.
+
+espacioInicial = espacioMemoria(1, 0, 450, None) # al principio no hay proceso asignado, entonces es None.
+memoria = [espacioInicial]
+
+def CargarEnMemoria(fProceso): #sinceramente no se como hacer.
+  #si el proceso cabe en la memoria, el tema es que la memoria quiza no tenga espacios disponibles continuos.
+  # yo tendria que tomar cada fin de proceso y el comienzo del proximo, para que ver si es que realmente hay espacio.
+
+  pass  #hacer
+#CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
+      #  OJO: contiguas: si habia una libre de direccion 50 a 100, y justo se liber aun proceso qu eocupaba de 100 a 130, unir esos espacios: de 50 a 130.
+"""
