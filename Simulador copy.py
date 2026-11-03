@@ -21,11 +21,7 @@ class Proceso:
     self.TR = 0. # TR = T_fin – TA
     self.TE = 0. # TE = TR – TI, donde TI es la duración de la ráfaga de CPU requerida).
 
-cantDisponible = 450 
-memoria = [cantDisponible, ]
-#100k para el SO, 450k para procesos.
-# la idea es que quede una lista de elementos que marque: proceso que ocupa el espacio, donde comienza, cuanta memoria lleva.
-# por lo tanto, deberia haber una funcion que calcule el espacio disponible.
+
 
 #En si, inicializar de esta forma no hace falta, lo hago para tener en cuenta las estrcturas a usar.
 nuevos = []

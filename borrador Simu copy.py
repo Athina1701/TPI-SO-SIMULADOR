@@ -194,6 +194,14 @@ def CargarEnMemoria(proceso):
 """
 ---------------------esto lo saqué el archivo ppal. No es necesario. despues lo borro
 
+cantDisponible = 450 
+memoria = [cantDisponible, ]
+#100k para el SO, 450k para procesos.
+# la idea es que quede una lista de elementos que marque: proceso que ocupa el espacio, donde comienza, cuanta memoria lleva.
+# por lo tanto, deberia haber una funcion que calcule el espacio disponible.
+
+
+ACTUALIZADO
 #  por el momento, la estructura de la memoria es esta. respondiendo a la pregunta de def calcularEsapcio.
 class espacioMemoria:
   def __init__(self, id, comienzo, tamaño, procesoAsignado):
