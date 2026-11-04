@@ -7,20 +7,20 @@ TA: tiempo de arribo
 TI: tiempo de irrupcion
 TR: tiempo de retorno
 TE: tiempo de espera
-estados: "nuevo", "listo", "suspendido", "terminado"
+estados: "nuevo", "listo", "suspendido", "ejecutando" , "terminado"
 """
 from operator import attrgetter
 
 class Proceso:
-  def __init__(self, id, TA, TI, memoria, estado):
+  def __init__(self, id, TA, TI, tamano, estado):
     self.id = id
     self.TA = TA
     self.TI = TI
-    self.memoria = memoria
+    self.tamano = tamano
     self.estado = estado
     self.TR = 0. # TR = T_fin – TA
     self.TE = 0. # TE = TR – TI, donde TI es la duración de la ráfaga de CPU requerida).
-
+#HACER: al tomar los procesos del archivo, debo validar los tiposde datos. tamaño debe ser numerico, en el archivo me lo entrega como string, o al menoS eso entiendo, lo tengo que pasar
 
 
 #En si, inicializar de esta forma no hace falta, lo hago para tener en cuenta las estrcturas a usar.
@@ -73,6 +73,7 @@ def EliminarDeCola(cola, fProceso): #recibe la cola y el proceso a eliminar.
    # no creo que pueda hacer uno general para todas las colas
    cola.remove(fProceso) #elimina el proceso puntual de la cola que se le pase. 
    #NOTA: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola".
+  
 
 texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos', etc."
 
@@ -102,11 +103,14 @@ memoria = []
 particionInicial = { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None }
 #id no me parece tan necesario, ademas hay que revisar en el cargarmemoria, porque se repiten los id.
 memoria.append(particionInicial)
+""" o lo que es lo mismo:
+memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ]
+"""
+
 disponibleEnMemoria = 450 #este debo ir disminuyendolo, y aumentarlo al liberar memoria.
 
 #-----------------------------------
 
-# Por el momento, la memoria se maneja d esta forma. Es lo que se me ocurrió
 def CargarEnMemoria(proceso, disponibleEnMemoria):
   logitudMemoria = len(memoria) 
   if logitudMemoria > 0: #por las dudas no sea una lista vacia. pero capaz no sea necesario
@@ -114,11 +118,12 @@ def CargarEnMemoria(proceso, disponibleEnMemoria):
       if memoria[i].get("procesoAsignado") is None: #no hay proceso asignado a la particion
         if proceso.tamano <= memoria[i].get("tamanio"):
             disponibleEnMemoria =  disponibleEnMemoria - proceso.tamano 
-            if disponibleEnMemoria != 0: #o sea, que aun hay espacio en memoria . Si dispoMemoria =  0, ya no hay lugar. 
+            if disponibleEnMemoria != 0: #o sea, que aun hay espacio en memoria para cargar un proximo proceso.
               particionNueva = { "id": (logitudMemoria+1), "comienzo": memoria[i].get("comienzo") + proceso.tamano, "tamanio": disponibleEnMemoria , "procesoAsignado": None }
               memoria.append(particionNueva)
+              #revisar el "id": (logitudMemoria+1). Quiza sea mejor preguntar por el id de la particion anterior y sumarle 1
 
-            # de memoria[i] (o sea, la particion que esta libre y el cual entra el proceso) me quedo con el id y el comienzo, el resto de los datos actualizo:
+            # de memoria[i] (o sea, la particion que esta libre en la cual voy a poner el proceso actual) me quedo con el id y el comienzo, el resto de los datos actualizo:
             memoria[i]["tamanio"] = proceso.tamano
             memoria[i]["procesoAsignado"] = proceso.id
 
@@ -127,10 +132,16 @@ def CargarEnMemoria(proceso, disponibleEnMemoria):
 
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
 
-def LiberarMemoria(proceso, disponibleEnMemoria):
+def LiberarMemoria(proceso, memoria, disponibleEnMemoria): #revisar
+  for particion in memoria:
+    if particion.get("procesoAsignado") == proceso.id :
+    #if str(particion.get("procesoAsignado")) == str(proceso.id): deberia cambairle por esta linea, ya que podria pasar que no sean del mismo tipo
+      particion["procesoAsignado"] = None
+      #ojo que: no elimino el elemento de la lista "memoria", solo cambio el estado, ya está desocupado.
+      disponibleEnMemoria += proceso.tamano
+      return True
+  return False #no se encontró el proceso en memoria.
 
-
-  pass #hacer
 
 
 

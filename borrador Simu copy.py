@@ -221,3 +221,17 @@ def CargarEnMemoria(fProceso): #sinceramente no se como hacer.
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
       #  OJO: contiguas: si habia una libre de direccion 50 a 100, y justo se liber aun proceso qu eocupaba de 100 a 130, unir esos espacios: de 50 a 130.
 """
+#en: def LiberarMemoria, cual deberia usar?:
+  #disponibleEnMemoria += proceso.tamano
+  #o....   disponibleEnMemoria += particion.get("tamanio"). para ser mas precisos, evitar errores
+#segun la IA, es mejor proceso.tamano, porque es lo que verdaderamente se esta liberando
+""" si quisiera estar segura de que proc.tamao y aprticion.tamaño son iguales:
+
+assert particion.get("tamanio") == proceso.tamano
+disponibleEnMemoria += proceso.tamano
+
+o....
+if particion.get("tamanio") != proceso.tamano:
+    raise ValueError("La partición no coincide con el tamaño del proceso")
+disponibleEnMemoria += proceso.tamano
+"""

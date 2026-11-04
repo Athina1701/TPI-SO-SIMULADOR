@@ -36,6 +36,8 @@ def CargarEnMemoria(proceso, disponibleEnMemoria):
 
             return True, disponibleEnMemoria #manda un mensaje de que el proceso se cargo en memoria.
     return False, disponibleEnMemoria #no hubo espacio, por tanto no se cargó.
+#en mi opinion, tira fruta la ia resepecto a disponibleEnMemoria como segundo parametro de retorno.Asi que voy a probar sin
+# actualizacion: en definitiva, no es lo mismo, no actualiza el valor si no lo pongo como parametro de retorno.
 
 
 #main: #esto es para saber si funciona
