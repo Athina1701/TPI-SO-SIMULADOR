@@ -1,4 +1,5 @@
 
+from operator import attrgetter, itemgetter
 
 #ESTE ARCHIVO ES PARA IR COLOCANDO LOS BLOQUES DE CODIGO QUE NO NECESITO EN EL ARCHIVO PRINCIPAL. 
 #ES DE CODIGOS BORRADORES, Y ANOTACIONES VARIAS PARA NO SOBRECARGAR EL PPAL. NO EJECUTAR PORQUE ESTA LLLENO DE PROBLEMAS. PARA ESO, EL ARCHIVO "PRUEBAS"
@@ -41,7 +42,7 @@ acumuladores: promedios de tiempo, rendimiento sistema (cant trabajos terminados
 """
 
 
-#declaracion de variables:
+#declaracion de variables------------------------------:
 
 #en mi opinion, delcarar los procesos como diccionarios es lo ideal, ya que estos ya estan creados, no es que los voy a tener q armar yo
 proceso1 = { "TA": 3, "TI": 5, "memoria": 20, "estado": "nuevo"}
@@ -235,3 +236,94 @@ if particion.get("tamanio") != proceso.tamano:
     raise ValueError("La partición no coincide con el tamaño del proceso")
 disponibleEnMemoria += proceso.tamano
 """
+
+
+"""---esta version de la funcion causa probleas por estar eliminado elementos mientras itero sobre la misma lista. Asi que, voy a trabajar con una copia o con una nueva lista
+
+def JuntarParticiones():
+  longitudMemoria = len(memoria) 
+  if longitudMemoria > 1: #seria al pedo ejecutar si solo hay una paarticion
+    for i in range(1, longitudMemoria): #comienzo a partir del 2do elemento, por eso el 1.
+      if memoria[i-1].get("procesoAsignado") == None and (memoria[i].get("procesoAsignado") == None):
+        #pregunto si la particion anterior no tiene procesos asignados, al igual que la particion actual.
+        #si es que SI estan desocupadas, debo: combinar tamaño, manteniendose el id y el comienzo del anterior.
+        memoria[i-1]["tamanio"] += memoria[i]["tamanio"]
+        #elimino la particion actual
+        del memoria[i]
+      #esto se itera hasta terminar la lista. si se unieron las particiones ...  esta raro
+"""
+#version nueva:
+
+#está mal. tengo que preguntar por el comienzo de cada particion. No si el siguiente es none
+"""ACTUALIZACION: le agregué lo de ordenar la memoria"""
+
+def JuntarParticiones(memoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
+  """#OJO: esta funcion NO compacta espacios libres. Esta por una cuestion tecnica de como se maneja lamemoria en nuestro codigo: 
+    porque: como memoria es una lista con elementos (las particiones), cuando se libera un proceso, y luego se libera otro que estaba ocuapndo un espacio junto al anterior, de seguido, 
+    cuando llegue otro proceso mas gande, y quiera ocupar  ese espacio entre medio no va a poder, porque en nuestro codigo queda como 2 particiones separadas, entonces detectaria como que no es suficiente espacio para el proceso
+  """
+  longitudMemoria = len(memoria) 
+  if longitudMemoria > 1: #seria al pedo ejecutar si solo hay una paarticion
+    memoria = sorted(memoria, key = itemgetter("comienzo") ) #primero ordeno memoria segun el comienzo de c/particion. 
+    memoriaCopy = []
+    i = 0
+    while i < longitudMemoria : # -1 para no pasarme del rango al iterar con i+1
+      particionNueva = memoria[i] #me quedo con id, comienzo y el procsoAsignado = none.
+      if memoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre: Si. entonces me fijo las siguientes
+        
+        while memoria[i+1].get("procesoAsignado") is None: #si da True, es pq puedo unirlas
+          #particionNueva = {"id": memoria[i].get("id"), "comienzo" memoria[i].get("comienzo") , memoria[i+1].get("tamanio") }
+          particionNueva["tamanio"] += memoria[i +1].get("tamanio")
+          i += 1
+
+      memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
+      i += 1
+    print("\n dentro dela funcion: ",memoriaCopy)
+  return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion
+                   
+
+
+
+#ACTUALIZADO: Version: iteracion por busqueda de comienzos de particiones
+# O sea, si la particion 1, comeinza en 50 y su tamaño es 50, yesta desocupada. Busco la siguiente particion que cominece en 100 (comienzo + tamaño de la particion anterior), y las junto si esta tambien esta desocupada.
+  #hacer
+def JuntarParticiones(): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
+  longitudMemoria = len(memoria) 
+  if longitudMemoria > 1: #seria al pedo ejecutar si solo hay una particion
+    memoriaCopy = []
+    i = 0
+    while i < longitudMemoria:
+      particionNueva = memoria[i] #me quedo con id, cmomienzo y el procsoAsignado = none.
+      if memoria[i].get("procesoAsignado") == None: #particion actual libre: Si. entonces me fijo las siguientes
+        while (memoria[i+1].get("procesoAsignado") == None): #si da True, es pq puedo unirlas
+          particionNueva["tamanio"] += memoria[i +1].get("tamanio")
+          i += 1
+
+      memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
+      i += 1
+    memoria = memoriaCopy
+
+"""Borrador del archivo ppal, lo cambié por las otras opciones"""
+def EliminarDeCola(cola, fProceso): #recibe la cola y el proceso a eliminar.
+   cola.remove(fProceso) #elimina el proceso puntual de la cola que se le pase. 
+   #NOTA: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola[indice]".
+#la funcion asi tal cual, elimina SOLO SI ES IDENTICO al que esta en cola. asi q, cuidado
+""" otra forma de implementarlo: 
+
+def EliminarDeCola(cola, id_a_eliminar): y en vez de id a eliminar, paso el proceso directamente
+    for i, elem in enumerate(cola):
+        if elem.get("id") == id_a_eliminar:
+            del cola[i]
+            return True
+    return False
+
+    o sea:
+def EliminarDeCola(cola, proceso):
+    for i, elem in enumerate(cola):
+        if elem.get("id") == proceso.id:
+            del cola[i]
+            return True
+    return False
+"""
+  
+      
