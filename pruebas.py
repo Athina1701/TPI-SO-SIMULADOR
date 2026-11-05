@@ -128,9 +128,44 @@ def EliminarDeCola(cola, fProceso): #recibe la cola y el proceso a eliminar.
    cola.remove(fProceso) #elimina el proceso puntual de la cola que se le pase. 
    #NOTA: esta funcion "remove" permite eliminar por nombre del elemento, si quisisera eliminar por indice de la lista: "del cola[indice]".
   
-print (memoria)
 
+#implementacion
+"""print (memoria)
 part =   {"id": 2, "comienzo": 50, "tamanio":200, "procesoAsignado": p2.id }
 EliminarDeCola(memoria, part["id"] )
-
 print (memoria) #la funcion asi tal cual, elimina SOLO SI ES IDENTICO al que esta en cola. asi q, cuidado
+"""
+
+
+def listar():
+  i = 0
+  for p in listos:
+    i += 1
+    p.TA = i
+    print(p.TA)
+
+def cambioLista():
+  listos[2].TA = 10
+  print("durante: " , listos[3].TA)
+#cambia a todos los elementos del proceso pq todso referencian al mismo objeto
+listos = []
+
+p1 = Proceso("p1", 1, 3, 10, "nuevo")
+p2 = Proceso("p2", 1, 6, 30, "nuevo")
+p3 = Proceso("p3", 1, 4, 70, "nuevo")
+p4 = Proceso("p1", 1, 3, 50, "nuevo")
+p5 = Proceso("p2", 1, 6, 40, "nuevo")
+
+print("antes")
+listos [p1, p2, p3, p4, p5]
+for i in range(5):
+  """listos.append(p1)"""
+  print(listos[i].TA)
+
+cambioLista()
+
+print("despues")
+print(listos)
+for p in listos:
+  print(p.TA)
+

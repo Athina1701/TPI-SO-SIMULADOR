@@ -31,7 +31,6 @@ terminados = []
 #cola de ejecucion, lo aplico como un diccionario:
 ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
 
-cantProcesos = 0
 
 def existeArchivo(nombreArchivo):
   try:
@@ -47,6 +46,7 @@ def existeArchivo(nombreArchivo):
     #si es false, se le da otra chance para cargar, o que se cree desde 0. Hacer
 
 def cargarNuevos (nombreArchivo):
+    global cantProcesos
   #if existeArchivo(nombreArchivo): #esto pienso preguntar en el main, no acá
     with open(nombreArchivo, 'r') as archivo:
   #carga procesos
@@ -56,13 +56,15 @@ def cargarNuevos (nombreArchivo):
           # El proceso está cargado en archivo como: id,TA,TI,memoria.
           linea = linea.strip().split(",") #strip para sacar \n y split para separar por comas.
           procesoNuevo = Proceso(linea[0], int(linea[1]), int(linea[2]), int(linea[3]), "nuevo")
+          #TE = TR – TI, ya lo resto acá porque se va a ir descontando su TI
+          procesoNuevo.TE = - procesoNuevo.TI
           # nombre = linea 0 , TA = linea 1, 
           #pNuevo = Proceso(p1,3, 5, 20, "nuevo")
           nuevos.append(procesoNuevo) # proc cargado a la lista.
 
           cantProcesos += 1  
           if cantProcesos > 10: #vigila que no se pase de 10 proc.
-            print("Se ha lleago al limite de procesos a cargar. Cantidad actual: ", cantProcesos)
+            print("Se ha llegado al limite de procesos a cargar. Cantidad actual: ", cantProcesos)
             break
 
         else: 
@@ -77,8 +79,6 @@ def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
           del cola[i]
           return True
   return False
-
-
 
 
 texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos', etc."
@@ -106,8 +106,9 @@ def MostrarCola(cola):
 # Es una lista de diccionarios. Las particiones son los diccionarios
 
 memoria = []
-particionInicial = { "id": "1", "comienzo": 0, "tamanio": 450, "procesoAsignado": None }
-#id no me parece tan necesario, ademas hay que revisar en el cargarmemoria, porque se repiten los id.
+particionInicial = { "id": "1", "comienzo": 0, "tamanio": 450, "procesoAsignado": None, "fragmentacion": 0 }
+#en la consigna piden al fragmentacion. Pero no entiendo para qué, si es variable
+#hay que revisar en el def cargarmemoria, los ID porque se repiten.
 memoria.append(particionInicial)
 """ o lo que es lo mismo:
 memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ]
@@ -117,7 +118,7 @@ disponibleEnMemoria = 450 #este debo ir disminuyendolo, y aumentarlo al liberar 
 
 #-----------------------------------
 #actualizacion: saque a DisponibleEnMemoria como parametro, para usarla como global, y se actualice automaticamente
-def CargarEnMemoria(proceso):
+def CargarEnMemoria(proceso): #REVISAR
   global disponibleEnMemoria
   longitudMemoria = len(memoria) 
   if longitudMemoria > 0: #por las dudas no sea una lista vacia. pero capaz no sea necesario
@@ -186,8 +187,9 @@ def CargarListosYSuspendidos(fProceso, colaActual): #hacer
 def AgregarAListos(fProceso, listos):
   fProceso.estado = "listo"
   mayorTI = True
-  for proc in listos: #pongo el nuevo proceso segun TI
-    if (fProceso.TI < proc.TI): #el proceso nuevo a cargar tiene menor timepo de irrupción
+  #cargar segun TI
+  for proc in listos: 
+    if (fProceso.TI < proc.TI): #el proceso nuevo a cargar tiene menor tiempo de irrupción
         indice = listos.index(proc) 
         listos.insert(indice, fProceso)
         mayorTI = False
@@ -195,8 +197,7 @@ def AgregarAListos(fProceso, listos):
     if mayorTI: 
         listos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
 
-
-
+#antes de cargar a listos, pregunto pot el tiempo actual
 def CargarListos(fProceso, colaActual, colaListos):
       #se actualliza estado del proceso a listo
       #a tener en cuenta: cargar los procesos segun TI.
@@ -215,6 +216,7 @@ def CargarListos(fProceso, colaActual, colaListos):
     CargarListosYSuspendidos(fProceso, colaActual)
 
 
+
 #def seleccionarProcesoSRTF(): # no hace falta porque ya esta ordenada la cola, o eso deberia. El orden se debe hacer en la cola de listos.
 
 #ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
@@ -222,60 +224,148 @@ def EjecutarProceso(procesoActual, colaEjecucion): #hacer
   #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
   #Nota: sí, tengo que agregarlo a la cola de lsitos, pero no tengo que preguntar si hay espacio en memoria, porque el proceso ya esta asignado en memoria
   if colaEjecucion["enUso"] == True: #HAY proc EJecutandose: preguntar por TI y sacar proceso
+    
     procesoEjecutandose = colaEjecucion["procEjecutandose"]
-    procesoEjecutandose.TI = colaEjecucion["tiempoEjecucion"] #T ejecucion debe ir restandose al pasar el tiempo
+    #procesoEjecutandose.TI = colaEjecucion["tiempoEjecucion"] #creo qu eesta linea no hace falta. Es para ctualizar TI, pero spone que igual se va ir restando directamente del proceso actualemnte enejecucuion
     
     if procesoActual.TI < procesoEjecutandose.TI: #lo saco al anterior de la cola ejecutandose
       #llamo a la funcion cargar
       AgregarAListos(procesoEjecutandose, listos) #aca adentro ya se actualiza su estado
       #si no entra en el if es pq el procesoActual es igual al del ejecutandose.
+    else: 
+      print("La CPU está ocupada por un proceso con menor TI")
   #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
-  #no pongo un else, pq en ambos casos debo asignar el proceso actual en la cola de listos
+  else:
+    colaEjecucion["enUso"] = True
+  #no pongo en else, pq en ambos casos debo asignar el proceso actual en la cola de listos
   EliminarDeCola(listos, procesoActual)
   procesoActual.estado = "ejecutandose"
+
   colaEjecucion["procEjecutandose"] = procesoActual
-  colaEjecucion["tiempoEjecucion"] = procesoActual.TI #no hace falta este, creo
+  #colaEjecucion["tiempoEjecucion"] = procesoActual.TI #no hace falta este, creo
   #NOTA: aca se deberia hacer un print general de el estado de todos los procesos y la cola de ejecucion 
 
-  
 
+#  TR = T_fin – TA. El tiempo de fin seria el TActual en que termina
+def TerminarProceso(proceso): #hacer
+  global cantProcesos, GM
+  liberadoCorrectamente, memoria, disponibleEnMemoria = LiberarMemoria(proceso, memoria, disponibleEnMemoria)
+  if liberadoCorrectamente:
+    cantProcesos -=1
+    GM -= 1
+    proceso.estado = "terminado"
+    #calcular TR del proceso
+    proceso.TR = tActual - proceso.TA
+    terminados.append(proceso)
 
-
-def suspenderEjecucion(fProceso): #hacer
-  pass #se usaria para sacarlo de la cola, actualizar estado.
-
-def TerminarProceso(proceso, cantProcesos): #hacer
-  if proceso.TI == 0:
-    liberadoCorrectamente, memoria, disponibleEnMemoria = LiberarMemoria(proceso, memoria, disponibleEnMemoria)
-    if liberadoCorrectamente:
-      ejecucion["enUso"] = False
-      ejecucion["procEjecutandose"] = None
-      ejecucion["tiempoEjecucion"] = 0
-
-      cantProcesos -=1
-      proceso.estado = "terminado"
-      terminados.append(proceso)
-    else: 
+    ejecucion["enUso"] = False
+    ejecucion["procEjecutandose"] = None
+    #ejecucion["tiempoEjecucion"] = 0
+  else: 
       print("Hubo un error al finalizar el proceso.")
 
   return cantProcesos, memoria, disponibleEnMemoria
  #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
-def AumentarTiempo(): #hacer
-  #aumenta tiempo actual
-  #en esta funcion, deberia tambien aumentar lso tiempos de espera, o de retorno, no se, de cada proceso
-  pass
+
 
 
 """ Al finalizar la simulación se deberá presentar un informe estadístico con, tiempo de retorno y espera para cada
 proceso y los respectivos tiempos promedios. También deberá calcular el rendimiento del sistema para la
 simulación (cantidad de trabajos terminados por unidad de tiempo)"""
-def CalcularTEyTR ():
-  pass
+
+
+def CalcularPromediosTEyTR ():
+  #tiempos promedios:
+  #TE suma de todos los TE divido la cant de procesos
+  totalProcesos = len(terminados)
+  TEpromedio = 0
+  TRpromedio = 0
+  for p in terminados:
+    TEpromedio += p.TE
+    TRpromedio += p.TR
+
+  TEpromedio = TEpromedio / totalProcesos
+  TRpromedio = TRpromedio / totalProcesos
+  return TEpromedio, TRpromedio
+
 
 def CalcularRendimientoSistema ():
   pass
 
 
+def AumentarTiempo(): #hacer
+  global tActual
+  #aumenta tiempo actual
+  #en esta funcion, deberia tambien aumentar lso tiempos de espera, o de retorno, no se, de cada proceso
+  tActual +=1
+  if ejecucion["enUso"] == True:
+    ejecucion["procEjecuntandose"].TI -=1
+    if ejecucion["procEjecuntandose"].TI == 0: #en esta funcion se "aumenta" el TR del proceso
+      cantProcesos, memoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecuntandose"] )
+    
+    #Aumentar tiempos de espera de cada proceso:
+    for proc in listos:
+      proc.TE += 1
+
+    for proc in listosSuspendidos:
+      proc.TE += 1
+
+
+#----------------------------------------------------------------------------------
+#MAIN:
+
+#declaracion de variables:
+
+cantProcesos = 0
+tActual = 0
+GM = 0 # Grado de Multiprogramacion, maximo 5
+
+#menu: #mejorar la salida de texto
+print("Bienvenido! Opciones Disponibles:" \
+  "0. Salir: ingrese '0' para salir" \
+  "1. Informacion (recomendable)" \
+  "2. Comenzar Simulador")
+opcion = 8
+while opcion != 1 and opcion != 2 and opcion != 0: #para controlar 
+  opcion = int(input("Seleccione una opción: "))
+  if opcion == 0:
+    break
+  elif opcion == 1:
+      pass
+  elif opcion == 2:
+    print("""Comenzando el Simulador...
+    Por favor, cargue la ruta del archivo con los procesos, en la forma: ... """)
+    existe = False
+    while not existe:
+      archivo = input("Cargue aquí: ")
+      existe = existeArchivo(archivo)
+      if existe == False:
+        archivo = input("""Intente ingresarlo otra vez o intente con otro archivo: 
+        o ingrese '0' para salir """)
+        if archivo == 0:
+          break #REVISAR ESTO
+
+    #Sigo con el programa:
+    #una vez abierto el archivo:
+    cargarNuevos (archivo)
+
+    for proceso in nuevos:
+      cargarListos(proceso, listos, nuevos)
+      
+
+    tope = 0
+    while GM <= 5 or tope < len(nuevos):
+      CargarListos()
+      GM += 1.
+    
+
+
+
+
+
+
+
+    
 
 
