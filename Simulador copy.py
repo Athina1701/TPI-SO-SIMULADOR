@@ -46,9 +46,9 @@ def existeArchivo(nombreArchivo):
   except FileNotFoundError:
     print("El archivo no fue encontrado.")
     return False
-    #si es false, se le da otra chance para cargar, o que se cree desde 0. Hacer
+    #si es false, se le da otra chance para cargar, o que se cree desde 0. #HACERRRR
 
-def cargarNuevos (nombreArchivo):
+def cargarNuevos (nombreArchivo, colaNuevos):
     global cantProcesos
     with open(nombreArchivo, 'r') as archivo:
     #cargar procesos
@@ -65,7 +65,7 @@ def cargarNuevos (nombreArchivo):
           #procesoNuevo.TE = - procesoNuevo.TI
           #o la segunda opcion: ir sumando TE +1 por cada vez que el timpo pasa
 
-          nuevos.append(procesoNuevo) # proc cargado a la lista.
+          colaNuevos.append(procesoNuevo) # proc cargado a la lista.
 
           cantProcesos += 1  
           if cantProcesos > 10: #vigila que no se pase de 10 proc.
@@ -76,7 +76,8 @@ def cargarNuevos (nombreArchivo):
           continue #esto por si hay un renglon vacio.
 
   #ordena procesos. ordeno la cola de nuevos por TA, si hay dos con TA iguales, ordeno por id.
-    nuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona. 
+    colaNuevos.sort(key=attrgetter("TA", "TI"))
+     #OTRA FORMA: colaNuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona. 
 
 def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
   for i, proc in enumerate(cola):
@@ -122,7 +123,7 @@ def PresentacionDeSalida(): #muestro todas las colas
   print("\n-----Estado del Procesador actualmente-----\n")
   print(f"{'Proceso Ejecutandose':^20} | {'Tiempo de Irrupción':^19} ")
   print("-" * 50)
-  if ejecucion["enUso"] == False:
+  if ejecucion["enUso"] == True:
     pEjecutandose = ejecucion["procEjecutandose"]
     print(f"{pEjecutandose.id :^20} | {pEjecutandose.TI :^19}")
   else: 
@@ -365,6 +366,18 @@ def AumentarTiempo(): #hacer
   for proc in listosSuspendidos:
     proc.TE += 1
 
+def informacion():
+  print("""Este es un proyecto de la materia de Sistemas Operativos, trata de un simulador.. bla bla.."
+
+  El archivo a ingresar puede y debe tenr al forma: ....
+  Al finalizar ... etc""")
+  salir = input("Para volver al menu presione 'Enter':")
+  if salir == "":
+    return True
+  return False
+
+
+
     
 
 
@@ -380,19 +393,27 @@ GM = 0 # Grado de Multiprogramacion, maximo 5
 
 
 #menu: #mejorar la salida de texto
-print("""Bienvenido al Simulador...! Opciones Disponibles:
-  "0. Salir: ingrese '0' para salir
-  "1. Informacion (recomendable)
-  "2. Comenzar Simulador
-  -----------------------------------------------------------------------""")
-opcion = 8
-while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
+print("Bienvenido al Simulador... ETC...!")
+
+while True:
+  print("""Opciones Disponibles:
+    "0. Salir: ingrese '0' para salir
+    "1. Informacion (recomendable)
+    "2. Comenzar Simulador
+    -----------------------------------------------------------------------""")
+
   opcion = int(input("Seleccione una opción: "))
+  if opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
+    print("\n-----Ha escrito una opcion invalida----- \n")
+
   if opcion == 0:
     break
   elif opcion == 1:
-      pass
-  
+    volverAMenu = informacion()
+    if volverAMenu:
+      continue
+
+#-------------------------------------------------
   elif opcion == 2:
     print("""Comenzando el Simulador...
     Por favor, cargue la ruta del archivo con los procesos, en el formato: ... """)
@@ -408,7 +429,7 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
 
     #Sigo con el programa, por:
     #una vez abierto el archivo:
-    cargarNuevos (archivo)
+    cargarNuevos (archivo, nuevos)
 
     i = 1
     while cantProcesos > 0:
@@ -426,7 +447,7 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
             if proceso.TA <= tActual:
               CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
               GM += 1
-              llegoProcNuevo: True #solo me interesa saber si llego un nuevo proceso, no si se cargó
+              llegoProcNuevo = True #solo me interesa saber si llego un nuevo proceso, no si se cargó
               if GM >= 5:
                 break
           #  else:
@@ -488,7 +509,7 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
     --Tiempo de Retorno Promedio:  {TRprom}""")
 
 
-
+#hay algo en la cola de nuevos, que hace que el resto se ejecute mal
       
 
 
