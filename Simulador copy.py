@@ -93,7 +93,7 @@ def MostrarCola(cola, texto):
     print(f"{'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10}")
     print("-" * 50)
     for p in cola:
-        print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.memoria:>8} | {p.estado:<10}")
+        print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>8} | {p.estado:<10}")
 
   #lo que hace el ''TA':>4' es rellenar con espacios vacios a la izq, si el texto tiene menos de 4 caracteres.
   #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
@@ -101,6 +101,8 @@ def MostrarCola(cola, texto):
 def MostrarMemoria():
   print(f"{'ID_Particion':<12} | {'Comienzo':^4} | {'Tamaño KB':^10} | {'Proceso Asignado':^16} | {'Fragmentacion':<13}")
   print("-" * 50)
+  print(f"{'P_0':^12} | {'450':^4} | {'100':^10} | {'SISTEMA OPERATIVO':^16} | {' ':<13}")
+
   for part in memoria:
     pAsignado = part["procesoAsignado"]
     if pAsignado is None:
@@ -132,6 +134,14 @@ def PresentacionDeSalida(): #muestro todas las colas
   #mostrar: id part, dir de comienzo, tamaño, id proceso asignado, fragmentacion?????
   #mostrar tabla
   MostrarMemoria()
+
+  print("-----Cola de Procesos Nuevos-----")
+  print(f"{'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10}")
+  print("-" * 50)
+  for p in nuevos:
+    if p.TA <= tActual:
+      print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>8} | {p.estado:<10}")
+
 
   texto = "-----Cola de Procesos Listos-----"
   MostrarCola(listos, texto)
@@ -185,7 +195,7 @@ def CargarEnMemoria(proceso): #REVISAR
 #Solucion: Version 1: uso un ordenador de lista
 def JuntarParticiones(memoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
   """#OJO: esta funcion NO compacta espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
-    porque: como memoria es una lista con elementos (las particiones), cuando se libera un proceso, y luego se libera otro que estaba ocuapndo un espacio junto al anterior, de seguido, 
+    porque: como memoria es una lista con elementos (las particiones), cuando se libera un proceso, y luego se libera otro que estaba ocuapndo un espacio sucesivo al anterior, de seguido, 
     cuando llegue otro proceso mas gande, y quiera ocupar  ese espacio entre medio no va a poder, porque en nuestro codigo queda como 2 particiones separadas, entonces detectaria como que no es suficiente espacio para el proceso
   """
   longitudMemoria = len(memoria) 
@@ -310,7 +320,7 @@ def TerminarProceso(proceso): #hacer
   return memoria, disponibleEnMemoria
  #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
-def FinalizoEjecucion(colaEjecucion):
+def DisminuirTI(colaEjecucion):
     colaEjecucion["procEjecutandose"].TI -=1
     if colaEjecucion["procEjecutandose"].TI == 0: #en esta funcion se "aumenta" el TR del proceso
       memoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"] ) 
@@ -324,7 +334,7 @@ proceso y los respectivos tiempos promedios. También deberá calcular el rendim
 simulación (cantidad de trabajos terminados por unidad de tiempo)"""
 
 
-def CalcularPromediosTEyTR ():
+def CalcularPromediosTEyTR():
   #tiempos promedios:
   #TE suma de todos los TE divido la cant de procesos
   totalProcesos = len(terminados)
@@ -382,6 +392,7 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
     break
   elif opcion == 1:
       pass
+  
   elif opcion == 2:
     print("""Comenzando el Simulador...
     Por favor, cargue la ruta del archivo con los procesos, en el formato: ... """)
@@ -395,7 +406,7 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
         if archivo == 0:
           break #REVISAR ESTO
 
-    #Sigo con el programa:
+    #Sigo con el programa, por:
     #una vez abierto el archivo:
     cargarNuevos (archivo)
 
@@ -403,14 +414,25 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
     while cantProcesos > 0:
       if GM < 5:
         if len(nuevos) != 0:
+          llegoProcNuevo: False
+          """ otra forma:
+              i = 0
+              while GM <= 5 or i < len(nuevos):
+                CargarListos()
+                GM += 1.
+              """
+              #...
           for proceso in nuevos:
             if proceso.TA <= tActual:
               CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
               GM += 1
+              llegoProcNuevo: True #solo me interesa saber si llego un nuevo proceso, no si se cargó
               if GM >= 5:
                 break
           #  else:
           #    break
+          if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
+            PresentacionDeSalida()
         else:
           print("---Cola de Nuevos Vacia---")
 
@@ -421,38 +443,63 @@ while opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
 
       AumentarTiempo()
 
+    #Una vez aumentado el tiempo: Control de ejecucion:---------------------
+
       if ejecucion["enUso"] == True:
-      #finalizó la ejecucion del proceso?
         if procesoActual == ejecucion["procEjecutandose"]: #es el que recien se ejecutó
           i += 1
-          procesoActual = listos[i] #quiza deba usar pop, para ello debo modifica lo de eliminar de cola
-        #si no es, es pq sigue esperando a ser ejecutado
-        procFinalizado, memoria, disponibleEnMemoria = FinalizoEjecucion() 
+          procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
+        #else: es pq sigue esperando a ser ejecutado
+
+        #finalizó la ejecucion del proceso?
+        procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion)  #aca dentro llamo a la funcion terminar
         if procFinalizado: #Si terminó, asigno otro proceso
-          #cantProcesos, memoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"] ) 
-          
-          if procesoActual.TA <= tActual:
+          if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
             EjecutarProceso()
 
-        if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
-          for i, p in enumerate(listosSuspendidos):
-            if p.TA <= tActual:
-              CargarListos(p, listos, listosSuspendidos)
-          
-        PresentacionDeSalida()
+#-------------termina control de ejecucion---------------
+
+          if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
+            for i, p in enumerate(listosSuspendidos):
+              if p.TA <= tActual:
+                CargarListos(p, listos, listosSuspendidos)
+
+          PresentacionDeSalida() #mostrar cada vez que se termina un proceso
+          #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
+
+    #------finalizado el bucle, cantProcesos = 0. Hago los informes:
+    print("-----El Simmulador Finalizó-----")
+    print ("-"* 50)
+    print("-----Comenzando Informes------")
+
+    TEprom, TRprom = CalcularPromediosTEyTR()
+    # rendimiento = CalcularRendimientoSistema ()
+
+    print("----Tiempos de Espera y Retorno para cada Proceso:-----")
+    print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Espera':<9} | {'T_Retorno':<10} |")
+    print ("-"* 50)
+    for p in terminados:
+      print(f"{p.id:<5} | {p.estado:<10} | {p.TE:<9} | {p.TR:<10} |")
+
+    print(f""" ---Tiempos Promedios---
+    
+    --Tiempo de Espera Promedio: {TEprom}
+
+    --Tiempo de Retorno Promedio:  {TRprom}""")
+
+
+
+      
+
+
+
+        
 
 
 
 
 
 
-
-"""    tope = 0
-    while GM <= 5 or tope < len(nuevos):
-      CargarListos()
-      GM += 1.
-    """
-    #...
   
 
 
