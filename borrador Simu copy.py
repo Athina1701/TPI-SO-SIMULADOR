@@ -9,7 +9,7 @@ from operator import attrgetter, itemgetter
 El simulador deberá presentar como salida la siguiente información:
  El estado del procesador (proceso que se encuentra corriendo en ese instante)
  La tabla de particiones de memoria, la cual deberá contener (Id de partición, dirección de comienzo de
-partición, tamaño de la partición, id de proceso asignado a la partición, fragmentación interna)
+partición, tamaño de la partición, id de proceso asignado a la partición, fragmentación)
  El estado de la cola de procesos listos y listos/suspendidos.
  Al finalizar la simulación se deberá presentar un informe estadístico con, tiempo de retorno y espera para cada
 proceso y los respectivos tiempos promedios. También deberá calcular el rendimiento del sistema para la
@@ -44,7 +44,7 @@ acumuladores: promedios de tiempo, rendimiento sistema (cant trabajos terminados
 
 #declaracion de variables------------------------------:
 
-#en mi opinion, delcarar los procesos como diccionarios es lo ideal, ya que estos ya estan creados, no es que los voy a tener q armar yo
+#en mi opinion, delcarar los procesos como diccionarios es lo ideal, ya que estos ya estan creados en el arch, no es que los voy a tener q armar yo
 proceso1 = { "TA": 3, "TI": 5, "memoria": 20, "estado": "nuevo"}
 
 #asi tal cual estarian cargados en el archivo. Sino, uso clases:
@@ -326,4 +326,22 @@ def EliminarDeCola(cola, proceso):
     return False
 """
   
-      
+"""Lo cambie por una solcuion que mantiene el orden de las columnas"""   
+def MostrarCola(cola, texto): #voy a tratar de hacer una sola funcion que reciba cualquiera de las colas, en vez de hacer una por cada cola.
+  print(texto, "\n")
+  print("IDProcess | TA | TI | memoria | estado \n") #por el momento, le dejo 'estado', para ver si hay errores.
+  for proc in cola:
+    print(proc.id, " | ", proc.TA, " | ", proc.TI, " | ", proc.memoria, " | ", proc.estado)  
+  #hay que hacerlo de forma tableada.
+  """------------- la solucion de la IA para la tabla:
+def MostrarCola(cola, texto):
+    print(texto, "\n")
+    print(f"{'ID':<5} | {'TA':>4} | {'TI':>4} | {'Tamaño':>8} | {'Estado':<10}")
+    print("-" * 50)
+
+    for p in cola:
+        print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.memoria:>8} | {p.estado:<10}")
+
+  #lo que hace el ''TA':>4' es rellenar con espacios vacios a la izq, si el texto tiene menos de 4 caracteres.
+  #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
+  """
