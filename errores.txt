@@ -1,0 +1,223 @@
+
+errores:
+
+
+Seleccione una opción: 2
+           > Comenzando el Simulador...
+-Por favor, cargue la ruta del archivo con los procesos, en el formato: txt 
+-Cargue aquí: C:\Users\athin\Downloads\labPython\TPI-SO-SIMULADOR\procesosPrueba.txt
+
+             -------- Tiempo Actual:  0  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|       Ninguno        |          0          |
+
+--(Actualmente no hay procesos ejecutandose)--
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    230    |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | nuevo      |
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    4 |        100 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+             -------- Tiempo Actual:  1  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p3          |          3          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    80     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+La CPU está ocupada por un proceso con menor TI
+
+             -------- Tiempo Actual:  2  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          4          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | suspendido |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | suspendido |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+             -------- Tiempo Actual:  6  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          0          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    50     |        p1        |       0      
+Par_6        |   150    |    80     |      Libre       |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p6    |    0 |    0 |        120 | ejecutandose |
+
+             -------- Tiempo Actual:  6  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          0          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    50     |        p1        |       0      
+Par_6        |   150    |    50     |        p1        |       0      
+Par_7        |   200    |    30     |      Libre       |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p6    |    0 |    0 |        120 | ejecutandose |
+

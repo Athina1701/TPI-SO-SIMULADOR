@@ -105,10 +105,10 @@ texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos',
 
 def MostrarCola(cola, texto):
     print(texto)
-    print(f"{'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10}")
+    print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
     print("-" * 50)
     for p in cola:
-        print(f"{p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10}")
+        print(f"| {p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10} |")
 
   #lo que hace el ''TA':>4' es rellenar con espacios vacios a la izq, si el texto tiene menos de 4 caracteres.
   #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
@@ -144,20 +144,21 @@ def PresentacionDeSalida(): #muestro todas las colas
     print(f"| {'Ninguno':^20} | {'0':^19} |")
     print("\n--(Actualmente no hay procesos ejecutandose)--")
 
-  #Mostrar Memoria
+  #Mostrar Memoria-----------------------------------------------------------------
   print("\n-----Tabla de PARTICIONES de MEMORIA-----")
   #mostrar: id part, dir de comienzo, tamaño, id proceso asignado, fragmentacion?????
   #mostrar tabla
   MostrarMemoria(memoria)
   print(" Cantidad de Procesos Actualmente: ", cantProcesos)
+  #-----------------------------------------------------------------------------------
   print("\n-----Cola de Procesos NUEVOS-----")
   print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
   print("-" * 50)
   for p in nuevos:
-    if p.TA <= tActual:
-      print(f"| {p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10} |")
+    #if p.TA <= tActual:
+    print(f"| {p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10} |")
 
-
+#---------------------------------------------------------------------
   texto = "\n-----Cola de Procesos LISTOS-----"
   MostrarCola(listos, texto)
   texto = "\n-----Cola de Procesos LISTOS y SUSPENDIDOS-----"
@@ -318,9 +319,9 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
 
 
 #  TR = T_fin – TA. El tiempo de fin seria el TActual en que termina
-def TerminarProceso(proceso): #hacer
+def TerminarProceso(proceso, fMemoria): #hacer
   global cantProcesos, GM
-  liberadoCorrectamente, memoria = LiberarMemoria(proceso, memoria)
+  liberadoCorrectamente, fMemoria = LiberarMemoria(proceso, fMemoria)
   if liberadoCorrectamente:
     cantProcesos -=1
     GM -= 1
@@ -335,13 +336,13 @@ def TerminarProceso(proceso): #hacer
   else: 
       print("Hubo un error al finalizar el proceso.")
 
-  return memoria, disponibleEnMemoria
+  return fMemoria, disponibleEnMemoria
  #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
-def DisminuirTI(colaEjecucion):
+def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
     colaEjecucion["procEjecutandose"].TI -=1
     if colaEjecucion["procEjecutandose"].TI == 0: #en esta funcion se "aumenta" el TR del proceso
-      memoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"] ) 
+      fMemoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"], fMemoria ) 
       return True, memoria, disponibleEnMemoria
     return False, memoria, disponibleEnMemoria
 
@@ -448,7 +449,7 @@ while True:
         print("proceso: ", p.id )
       esto era para probar si cargaba correcta,emte. Lo hacxe: el porblema no esta acá"""
 
-      i = 1
+      i = 0 #el indice de las listas comienza en 0
       while cantProcesos > 0:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
         if GM < 5:
@@ -476,11 +477,13 @@ while True:
           else:
             print("---Cola de Nuevos Vacia---")
 
-
-        if len(listos) > 0:
-          procesoActual = listos[i]
-          if procesoActual.TA <= tActual: 
-            EjecutarProceso(procesoActual, ejecucion, listos)
+        if listos: #pregunta si la lista no esta vacia
+          if i < len(listos): #para no pasarme del tamaño
+            procesoActual = listos[i]
+            if procesoActual.TA <= tActual: 
+              EjecutarProceso(procesoActual, ejecucion, listos)
+        else:
+          print("Por el momento, no hay procesos el cola de listos para ejecutar")
 
         AumentarTiempo(listos, listosSuspendidos)
 
@@ -497,16 +500,19 @@ while True:
             eso es válido para listas
             no es un bool en sí mismo, es una condición sobre la lista"""
             if listos: #pregunta si la lista no esta vacia
-              ultimo = listos[-1]
-            if i == ultimo:
+              #ultimo = listos[-1]
               i += 1
-              procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
+              #if i != ultimo:
+              if i < (len(listos) -1) :
+                procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
+              #else:
+              #  i = 0 #reinicio i, pq ya llegó al fin de la cola de listos
             else:
               print("\n -- Por el momento, no hay procesos en la cola de listos que puedan ejecutarse... \n")
-          #else: es pq sigue esperando a ser ejecutado
+            #else: es pq sigue esperando a ser ejecutado
 
           #finalizó la ejecucion del proceso?
-          procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion)  #aca dentro llamo a la funcion terminar
+          procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
           if procFinalizado: #Si terminó, asigno otro proceso
             if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
               EjecutarProceso(procesoActual, ejecucion, listos)
