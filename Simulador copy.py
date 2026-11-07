@@ -91,7 +91,7 @@ def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
   indice = 0
   while i < len(cola):
     proc = cola[indice]
-    if proc.get("id") == proceso.id:
+    if proc.id == proceso.id:
       resguardoIndice = indice
       seEncontroProc = True
       break
@@ -244,7 +244,7 @@ def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un pr
       return True, memoria
   #si terminó de iterar es pq no encontró el proceso, por eso retorna False, deberia poner tmb un texto que idga que no se encontró
   return False, memoria #no se encontró el proceso en memoria.
-
+#CAMBIAR A RETURN FALSE
 
 #----------------------------------------------------------------------------fin Memoria
 
@@ -253,21 +253,22 @@ def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   listosSuspendidos.append(fProceso) #este lo agrega al final de la cola, no se si seria mejor acomodar segun TI.
   EliminarDeCola(colaActual, fProceso)
 
-def AgregarAListos(fProceso, listos):
+def AgregarAListos(fProceso, colaListos):
   fProceso.estado = "listo"
   mayorTI = True
   #cargar segun TI
-  for proc in listos: 
+  listosCopy = list(colaListos)
+  for proc in listosCopy: 
     if (fProceso.TI < proc.TI): #el proceso nuevo a cargar tiene menor tiempo de irrupción
-        indice = listos.index(proc) 
-        listos.insert(indice, fProceso)
+        indice = colaListos.index(proc) 
+        colaListos.insert(indice, fProceso)
         mayorTI = False
         break
   if mayorTI: 
-    listos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
+    colaListos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
 
 #antes de cargar a listos, pregunto pot el tiempo actual
-def CargarListos(fProceso, colaActual, colaListos):
+def CargarListos(fProceso, colaListos, colaActual):
       #se actualliza estado del proceso a listo
       #a tener en cuenta: cargar los procesos segun TI.
       # quiza deba hacer una funcion aparte para eso
@@ -276,7 +277,7 @@ def CargarListos(fProceso, colaActual, colaListos):
     #cargar a listos
     AgregarAListos(fProceso, colaListos)
     #elimina de la cola anterior, porque ya se cargo a listos o suspendidos.
-    EliminarDeCola(colaActual, fProceso) 
+    EliminarDeCola(colaActual, fProceso)  #POR EL MOMENTO DEJO INACTIVO, PARA SABER SI ES ESTE EL PROBLEMA, ELIMINO AFUERA
       #con "cola actual" me refiero a la cola de la que se elimina, puede ser cola de ejecucion, de nuevos, de suspendidos.
   
   #no hay espacio: 
@@ -290,7 +291,7 @@ def CargarListos(fProceso, colaActual, colaListos):
 #def seleccionarProcesoSRTF(): # no hace falta porque ya esta ordenada la cola, o eso deberia. El orden se debe hacer en la cola de listos.
 
 #ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
-def EjecutarProceso(procesoActual, colaEjecucion, colaListos): #hacer
+def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
   #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
   #Nota: sí, tengo que agregarlo a la cola de lsitos, pero no tengo que preguntar si hay espacio en memoria, porque el proceso ya esta asignado en memoria
   #overhead:
@@ -299,19 +300,19 @@ def EjecutarProceso(procesoActual, colaEjecucion, colaListos): #hacer
     procesoEjecutandose = colaEjecucion["procEjecutandose"]
     #procesoEjecutandose.TI = colaEjecucion["tiempoEjecucion"] #creo qu eesta linea no hace falta. Es para ctualizar TI, pero spone que igual se va ir restando directamente del proceso actualemnte enejecucuion
     
-    if procesoActual.TI < procesoEjecutandose.TI: #lo saco al anterior de la cola ejecutandose
+    if procActual.TI < procesoEjecutandose.TI: #lo saco al anterior de la cola ejecutandose
       #llamo a la funcion de agragar a listos, sin preguntar por memoria.
       AgregarAListos(procesoEjecutandose, colaListos) #aca adentro ya se actualiza su estado
-      #si no entra en el if es pq el procesoActual es igual al del ejecutandose.
+      #si no entra en el if es pq el proceso Actual es igual al del ejecutandose.
     else: 
       print("La CPU está ocupada por un proceso con menor TI")
   #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
   else:
     colaEjecucion["enUso"] = True
   #no pongo en else, pq en ambos casos debo asignar el proceso actual en la cola de listos
-  EliminarDeCola(colaListos, procesoActual)
-  procesoActual.estado = "ejecutandose"
-  colaEjecucion["procEjecutandose"] = procesoActual
+  EliminarDeCola(colaListos, procActual)
+  procActual.estado = "ejecutandose"
+  colaEjecucion["procEjecutandose"] = procActual
   #colaEjecucion["tiempoEjecucion"] = procesoActual.TI #no hace falta este, creo
   #NOTA: aca se deberia hacer un print general de el estado de todos los procesos y la cola de ejecucion 
 
@@ -342,7 +343,7 @@ def DisminuirTI(colaEjecucion):
     if colaEjecucion["procEjecutandose"].TI == 0: #en esta funcion se "aumenta" el TR del proceso
       memoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"] ) 
       return True, memoria, disponibleEnMemoria
-    return False
+    return False, memoria, disponibleEnMemoria
 
 
 
@@ -394,9 +395,6 @@ def informacion():
 
 
 
-    
-
-
 
 #----------------------------------------------------------------------------------
 #MAIN:
@@ -431,14 +429,14 @@ while True:
 
 #-------------------------------------------------
   elif opcion == 2:
-    print("""Comenzando el Simulador...
-    Por favor, cargue la ruta del archivo con los procesos, en el formato: ... """)
+    print("""           > Comenzando el Simulador...
+-Por favor, cargue la ruta del archivo con los procesos, en el formato: txt """)
     existe = False
     while not existe:
-      archivo = input("Cargue aquí: ")
+      archivo = input("-Cargue aquí: ")
       existe = existeArchivo(archivo)
       if not existe:
-        archivo = input("""Intente ingresarlo otra vez o intente con otro archivo (Ingrese '0' para volver al Menu) """)
+        archivo = input("""-ERROR!-Intente ingresarlo otra vez o intente con otro archivo (Ingrese '0' para volver al Menu) """)
         if archivo == "0":
           break         #REVISAR ESTO
      
@@ -446,11 +444,13 @@ while True:
     #Sigo con el programa, por:
     #una vez abierto el archivo:
       cargarNuevos (archivo, nuevos)
+      """ for p in nuevos:
+        print("proceso: ", p.id )
+      esto era para probar si cargaba correcta,emte. Lo hacxe: el porblema no esta acá"""
 
       i = 1
       while cantProcesos > 0:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
-
         if GM < 5:
           if len(nuevos) > 0:
             llegoProcNuevo: False
@@ -480,28 +480,41 @@ while True:
         if len(listos) > 0:
           procesoActual = listos[i]
           if procesoActual.TA <= tActual: 
-            EjecutarProceso(procesoActual, ejecucion)
+            EjecutarProceso(procesoActual, ejecucion, listos)
 
         AumentarTiempo(listos, listosSuspendidos)
 
       #Una vez aumentado el tiempo: Control de ejecucion:---------------------
 
         if ejecucion["enUso"] == True:
-          if procesoActual == ejecucion["procEjecutandose"]: #es el que recien se ejecutó
-            i += 1
-            procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
+          if procesoActual == ejecucion["procEjecutandose"]: #pregunto si es el que recien se ejecutó, si es asi, entonces ejecuto el siguiente en listos
+            
+            """if listos: ultimo = listos[-1]
+            listos debería ser una lista
+            if listos: significa:
+            si la lista no está vacía, entra
+            si está vacía, no entra
+            eso es válido para listas
+            no es un bool en sí mismo, es una condición sobre la lista"""
+            if listos: #pregunta si la lista no esta vacia
+              ultimo = listos[-1]
+            if i == ultimo:
+              i += 1
+              procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
+            else:
+              print("\n -- Por el momento, no hay procesos en la cola de listos que puedan ejecutarse... \n")
           #else: es pq sigue esperando a ser ejecutado
 
           #finalizó la ejecucion del proceso?
           procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion)  #aca dentro llamo a la funcion terminar
           if procFinalizado: #Si terminó, asigno otro proceso
             if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
-              EjecutarProceso()
+              EjecutarProceso(procesoActual, ejecucion, listos)
 
   #-------------termina control de ejecucion---------------
 
             if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
-              for i, p in enumerate(listosSuspendidos):
+              for j, p in enumerate(listosSuspendidos):
                 if p.TA <= tActual:
                   CargarListos(p, listos, listosSuspendidos)
 
