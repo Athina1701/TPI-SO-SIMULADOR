@@ -25,8 +25,7 @@ class Proceso:
     self.TE = 0. # TE = TR – TI, donde TI es la duración de la ráfaga de CPU requerida).
 #HACER: al tomar los procesos del archivo, debo validar los tiposde datos. tamaño debe ser numerico, en el archivo me lo entrega como string, o al menoS eso entiendo, lo tengo que pasar
 
-
-#En si, inicializar de esta forma no hace falta, lo hago para tener en cuenta las estrcturas a usar.
+#
 nuevos = []
 listos = []
 listosSuspendidos = []
@@ -48,7 +47,7 @@ def existeArchivo(nombreArchivo):
     return False
     #si es false, se le da otra chance para cargar, o que se cree desde 0. #HACERRRR
 
-def cargarNuevos (nombreArchivo, colaNuevos):
+def cargarNuevos(nombreArchivo, colaNuevos):
     global cantProcesos
     with open(nombreArchivo, 'r') as archi:
     #cargar procesos
@@ -89,7 +88,7 @@ def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
   #otra froma de: la anterior no parece eliminar correctamente
   seEncontroProc = False
   indice = 0
-  while i < len(cola):
+  while indice < len(cola):
     proc = cola[indice]
     if proc.id == proceso.id:
       resguardoIndice = indice
@@ -123,7 +122,7 @@ def MostrarMemoria(fMemoria):
     if pAsignado is None:
       pAsignado = "Libre"
     print(f"Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} | {0:^13}")
-
+  print("Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
 
 """El simulador deberá presentar como salida la siguiente información:
  El estado del procesador (proceso que se encuentra corriendo en ese instante)
@@ -220,16 +219,22 @@ def JuntarParticiones(memoria): #revisar, se lo puede mejorar (el indice i+1 me 
     memoria.sort(key=itemgetter("comienzo"))  #primero ordeno memoria segun el comienzo de c/particion.
     memoriaCopy = []
     i = 0
-    while i < longitudMemoria :  
+
+    while i < longitudMemoria:  
       particionNueva = memoria[i] #me quedo con id, comienzo y el procsoAsignado = none.
       if memoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre: Si. entonces me fijo las siguientes
         #-1 para no pasarme del rango al iterar con i+1
-        while memoria[i+1].get("procesoAsignado") is None: #si da True, es pq puedo unirlas
+        noUltimo = True
+        while noUltimo and (memoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
+          #que no se toque el orden de la pregunta.
           particionNueva["tamanio"] += memoria[i +1].get("tamanio")
           i += 1
+          if i >= (longitudMemoria -1) :
+            noUltimo = False
       #en este caso, no hace falta eliminar la particion de la memoria, porque ya estoy colocando solo las nuevas particiones en otra lista de memoria.
       memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
       i += 1
+    
   return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion
          
 
@@ -286,6 +291,8 @@ def CargarListos(fProceso, colaListos, colaActual):
     #cargar en suspendidos, solo si es que NO estaba en suspendidos
     CargarListosYSuspendidos(fProceso, colaActual)
   #si es == suspendido, no hago nada.
+  #if not hayespacio: huboFragmentacion = True.
+  #return huboFragmentacion
 
 
 
@@ -305,17 +312,24 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
       #llamo a la funcion de agragar a listos, sin preguntar por memoria.
       AgregarAListos(procesoEjecutandose, colaListos) #aca adentro ya se actualiza su estado
       #si no entra en el if es pq el proceso Actual es igual al del ejecutandose.
+      EliminarDeCola(colaListos, procActual)
+      procActual.estado = "ejecutandose"
+      colaEjecucion["procEjecutandose"] = procActual
     else: 
-      print("La CPU está ocupada por un proceso con menor TI")
+      print("\n Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
   #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
   else:
-    colaEjecucion["enUso"] = True
+      colaEjecucion["enUso"] = True
+      EliminarDeCola(colaListos, procActual)
+      procActual.estado = "ejecutandose"
+      colaEjecucion["procEjecutandose"] = procActual
   #no pongo en else, pq en ambos casos debo asignar el proceso actual en la cola de listos
-  EliminarDeCola(colaListos, procActual)
+
+""" EliminarDeCola(colaListos, procActual)
   procActual.estado = "ejecutandose"
   colaEjecucion["procEjecutandose"] = procActual
   #colaEjecucion["tiempoEjecucion"] = procesoActual.TI #no hace falta este, creo
-  #NOTA: aca se deberia hacer un print general de el estado de todos los procesos y la cola de ejecucion 
+  #NOTA: aca se deberia hacer un print general de el estado de todos los procesos y la cola de ejecucion """
 
 
 #  TR = T_fin – TA. El tiempo de fin seria el TActual en que termina
@@ -370,7 +384,7 @@ def CalcularPromediosTEyTR():
 
 def CalcularRendimientoSistema ():
   pass
-
+#total de trabajos terminados / periodo de tiempo (o sae: cant colaTerminados divido tActual)
 
 
 def AumentarTiempo(colaListos, colaSuspendidos): #hacer
@@ -444,7 +458,8 @@ while True:
     if existe:
     #Sigo con el programa, por:
     #una vez abierto el archivo:
-      cargarNuevos (archivo, nuevos)
+      cargarNuevos(archivo, nuevos)
+      #MOSTRAR PROCESOS CARGADOS
       """ for p in nuevos:
         print("proceso: ", p.id )
       esto era para probar si cargaba correcta,emte. Lo hacxe: el porblema no esta acá"""
@@ -454,7 +469,7 @@ while True:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
         if GM < 5:
           if len(nuevos) > 0:
-            llegoProcNuevo: False
+            llegoProcNuevo = False
             """ otra forma:
                 i = 0
                 while GM <= 5 or i < len(nuevos):
@@ -473,7 +488,7 @@ while True:
             #  else:
             #    break
             if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
-              PresentacionDeSalida()
+              PresentacionDeSalida() #lo podria poner despues de poner a ejecutar proceso
           else:
             print("---Cola de Nuevos Vacia---")
 

@@ -1,0 +1,19 @@
+
+
+"""El simulador deberá presentar como salida la siguiente información:
+ El estado del procesador (proceso que se encuentra corriendo en ese instante)
+ La tabla de particiones de memoria, la cual deberá contener (Id de partición, dirección de comienzo de
+partición, tamaño de la partición, id de proceso asignado a la partición, fragmentación)
+ El estado de la cola de procesos listos y listos/suspendidos."""
+
+#respecto a la fragmentacion: nosotros decidimos como manejarla: aparece fragmentacion cuando: un proceso quiere cargarse en memoria, pero no puede porque no hay espacio suficiente de memoria:
+#Entonces: puedo indicar que hay fragmentacion cuando procesoCragado = False. entonces mando por panatalla mensaje de "fragmentacion: tanto"
+
+
+memoria = []
+particionInicial = { "id": "1", "comienzo": 0, "tamanio": 450, "procesoAsignado": None, "fragmentacion": 0 }
+#en la consigna piden al fragmentacion. Pero no entiendo para qué, si es variable
+#hay que revisar en el def cargarmemoria, los ID porque se repiten.
+memoria.append(particionInicial)
+""" o lo que es lo mismo:
+memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ] """
