@@ -491,11 +491,21 @@ while True:
               PresentacionDeSalida() #lo podria poner despues de poner a ejecutar proceso
           else:
             print("---Cola de Nuevos Vacia---"
+                  #todo esto que viene despues se borra
             "tiempo: ", tActual,\
             "cantodad procesos:", cantProcesos, "grado multiprog: ", GM)
+            print("Listos:", [p.id for p in listos])
+            print("Suspendidos:", [p.id for p in listosSuspendidos])
+            print("CPU ocupada:", ejecucion["enUso"])
+
+            if ejecucion["enUso"]:
+              print("Proceso ejecutándose:",
+                ejecucion["procEjecutandose"].id)
+
+            print("Memoria disponible:", disponibleEnMemoria)
             #break ACA ESTA EL PROBLEMA
             #patrece q cuando la cantidad de procesos en = 1.
-            if cantProcesos == 1:
+            if cantProcesos == 0:
               break #creo q es un problema de indices. se rompe cuando cantProc = 1.
 
         if listos: #pregunta si la lista no esta vacia
@@ -533,6 +543,12 @@ while True:
             #else: es pq sigue esperando a ser ejecutado
 
           #finalizó la ejecucion del proceso?
+          #segun chat aca puede estar el error, y el hecho de que no actualizo procActual
+          print("Proceso actual:", procesoActual.id)
+          print("Proceso en CPU:", ejecucion["procEjecutandose"].id)
+          print("TI:", ejecucion["procEjecutandose"].TI)
+          print("Estado:", ejecucion["procEjecutandose"].estado)
+
           procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
           if procFinalizado: #Si terminó, asigno otro proceso
             if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
