@@ -224,13 +224,12 @@ def JuntarParticiones(memoria): #revisar, se lo puede mejorar (el indice i+1 me 
       particionNueva = memoria[i] #me quedo con id, comienzo y el procsoAsignado = none.
       if memoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre: Si. entonces me fijo las siguientes
         #-1 para no pasarme del rango al iterar con i+1
-        noUltimo = True
-        while noUltimo and (memoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
+        while (memoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
           #que no se toque el orden de la pregunta.
           particionNueva["tamanio"] += memoria[i +1].get("tamanio")
           i += 1
-          if i >= (longitudMemoria -1) :
-            noUltimo = False
+          if (i+1) >= (longitudMemoria -1):
+            break
       #en este caso, no hace falta eliminar la particion de la memoria, porque ya estoy colocando solo las nuevas particiones en otra lista de memoria.
       memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
       i += 1
@@ -341,7 +340,7 @@ def TerminarProceso(proceso, fMemoria): #hacer
     GM -= 1
     proceso.estado = "terminado"
     #calcular TR del proceso
-    proceso.TR = tActual - proceso.TA
+    proceso.TR = tActual - proceso.TA #en esta funcion se "aumenta" el TR del proceso
     terminados.append(proceso)
 
     ejecucion["enUso"] = False
@@ -355,8 +354,9 @@ def TerminarProceso(proceso, fMemoria): #hacer
 
 def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
     colaEjecucion["procEjecutandose"].TI -=1
-    if colaEjecucion["procEjecutandose"].TI == 0: #en esta funcion se "aumenta" el TR del proceso
-      fMemoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"], fMemoria ) 
+    if colaEjecucion["procEjecutandose"].TI == 0: 
+      print("-Terminó el proceso: ", colaEjecucion["procEjecutandose"].id) 
+      fMemoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"], fMemoria )
       return True, memoria, disponibleEnMemoria
     return False, memoria, disponibleEnMemoria
 
@@ -468,7 +468,7 @@ while True:
       while cantProcesos > 0:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
         if GM < 5:
-          if len(nuevos) > 0:
+          if nuevos:
             llegoProcNuevo = False
             """ otra forma:
                 i = 0
@@ -490,7 +490,13 @@ while True:
             if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
               PresentacionDeSalida() #lo podria poner despues de poner a ejecutar proceso
           else:
-            print("---Cola de Nuevos Vacia---")
+            print("---Cola de Nuevos Vacia---"
+            "tiempo: ", tActual,\
+            "cantodad procesos:", cantProcesos, "grado multiprog: ", GM)
+            #break ACA ESTA EL PROBLEMA
+            #patrece q cuando la cantidad de procesos en = 1.
+            if cantProcesos == 1:
+              break #creo q es un problema de indices. se rompe cuando cantProc = 1.
 
         if listos: #pregunta si la lista no esta vacia
           if i < len(listos): #para no pasarme del tamaño
@@ -538,14 +544,15 @@ while True:
               for j, p in enumerate(listosSuspendidos):
                 if p.TA <= tActual:
                   CargarListos(p, listos, listosSuspendidos)
+                  #REVISAR ESTO
 
             PresentacionDeSalida() #mostrar cada vez que se termina un proceso
             #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
 
       #------finalizado el bucle, cantProcesos = 0. Hago los informes:
-      print("-----El Simmulador Finalizó-----")
-      print ("-"* 50)
-      print("-----Comenzando Informes------")
+      print("\n-----El Simulador Finalizó-----\n")
+      print ("-"* 100)
+      print("\n-----Comenzando Informes------")
 
       TEprom, TRprom = CalcularPromediosTEyTR()
       # rendimiento = CalcularRendimientoSistema ()
@@ -561,6 +568,7 @@ while True:
       --Tiempo de Espera Promedio: {TEprom}
 
       --Tiempo de Retorno Promedio:  {TRprom}""")
+  
   
 
   #hay algo en la cola de nuevos, que hace que el resto se ejecute mal
