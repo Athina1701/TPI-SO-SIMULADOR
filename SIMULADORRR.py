@@ -125,6 +125,7 @@ def MostrarMemoria(fMemoria):
       pAsignado = "Libre"
     print(f"Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} | {0:^13}")
   print("Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
+  print("cantidad de particiones: ", len(memoria))
 
 """El simulador deberá presentar como salida la siguiente información:
  El estado del procesador (proceso que se encuentra corriendo en ese instante)
@@ -192,11 +193,13 @@ def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
     memoria.sort(key=itemgetter("tamanio")) #ordeno la lista para hacer ASIGNACION BEST FIT
     for i in range(longitudMemoria):  #itero sobre cada particion, para saber cual esta libre
       if memoria[i].get("procesoAsignado") is None: #no hay proceso asignado a la particion
+        
         if fproceso.tamano <= memoria[i].get("tamanio"):
+            sobraEspacio = memoria[i].get("tamanio") - fproceso.tamano
             disponibleEnMemoria =  disponibleEnMemoria - fproceso.tamano 
-            if disponibleEnMemoria > 0: #o sea, que aun hay espacio en memoria para cargar un proximo proceso.
+            if sobraEspacio > 0: #o sea, hay espacio libre para crear una particion libre.
               # def asignar id
-              particionNueva = { "id": (longitudMemoria+1), "comienzo": memoria[i].get("comienzo") + fproceso.tamano, "tamanio": disponibleEnMemoria , "procesoAsignado": None }
+              particionNueva = { "id": (longitudMemoria+1), "comienzo": memoria[i].get("comienzo") + fproceso.tamano, "tamanio": sobraEspacio , "procesoAsignado": None }
               memoria.append(particionNueva)
               #revisar el "id": (logitudMemoria+1). Quiza sea mejor preguntar por el id de la particion anterior y sumarle 1
 
@@ -211,39 +214,47 @@ def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
 
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
 #Solucion: Version 1: uso un ordenador de lista
-def JuntarParticiones(memoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
+
+def JuntarParticiones(fmemoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
   """#OJO: esta funcion NO compacta espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
     porque: como memoria es una lista con elementos (las particiones), cuando se libera un proceso, y luego se libera otro que estaba ocuapndo un espacio sucesivo al anterior, de seguido, 
     cuando llegue otro proceso mas gande, y quiera ocupar  ese espacio entre medio no va a poder, porque en nuestro codigo queda como 2 particiones separadas, entonces detectaria como que no es suficiente espacio para el proceso
   """
-  longitudMemoria = len(memoria) 
+  #se dice que es recomendable hacer la copia antes del if. para que no devuelva algo vacio,
+  memoriaCopy = [] #no funciona porque no esto haciendo una copia como tal de memoria. estoy modificando sobre las mimsa s direcciones de memoria original.
+
+  longitudMemoria = len(fmemoria) 
   if longitudMemoria > 1: #seria al pedo ejecutar si solo hay una particion
-    memoria.sort(key=itemgetter("comienzo"))  #primero ordeno memoria segun el comienzo de c/particion.
-    memoriaCopy = []
+    fmemoria.sort(key=itemgetter("comienzo"))  #primero ordeno memoria segun el comienzo de c/particion.
     i = 0
 
     while i < longitudMemoria:  
-      particionNueva = memoria[i] #me quedo con id, comienzo y el procsoAsignado = none.
-      if memoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre: Si. entonces me fijo las siguientes
+      particionNueva = fmemoria[i].copy() #me quedo con id, comienzo y el procsoAsignado = none.
+      if fmemoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre: Si. entonces me fijo las siguientes
         #-1 para no pasarme del rango al iterar con i+1
-        while (memoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
+        while ( i+1 < longitudMemoria) and (fmemoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
           #que no se toque el orden de la pregunta.
-          particionNueva["tamanio"] += memoria[i +1].get("tamanio")
+          particionNueva["tamanio"] += fmemoria[i +1].get("tamanio")
           i += 1
-          if (i+1) >= (longitudMemoria -1):
-            break
+          continue #no le afecta en nada
       #en este caso, no hace falta eliminar la particion de la memoria, porque ya estoy colocando solo las nuevas particiones en otra lista de memoria.
       memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
       i += 1
-    
-  return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion
-         
+  else:
+    memoriaCopy= fmemoria
+    #borrar los print
+  print("\n----cantidad de particiones en JUNTARMEMORIA: ", len(fmemoria))
+  print("cantidad de particiones en JUNTARMEMORIA de la mem original: ", len(memoria))
+
+  print("cantidad de particiones de la copia: ", len(memoriaCopy))
+
+  return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion      
 
 def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un proceso
   global disponibleEnMemoria
   for particion in memoria: #me fijo en que lugar esta el proceso a quitar
     if str(particion.get("procesoAsignado")) == str(fproceso.id) :
-    #El str es para pasar ambos a tipo string para que no de error de tipos. Solo por las dudas. 
+      #El str es para pasar ambos a tipo string para que no de error de tipos. Solo por las dudas. 
       particion["procesoAsignado"] = None
       #ojo que: no elimino el elemento de la lista "memoria", solo cambio el estado, ya está desocupado.
       disponibleEnMemoria += fproceso.tamano
@@ -510,7 +521,7 @@ while True:
         if listos: #pregunta si la lista no esta vacia
           procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
           if procesoActual.TA <= tActual: 
-            print("----proceso actual dentro de ejecutar proc: ", procesoActual) #borrar
+            print("----proceso actual dentro de ejecutar proc: ", procesoActual.id) #borrar
             EjecutarProceso(procesoActual, ejecucion, listos)
         else:
           print("Por el momento, no hay procesos el cola de listos para ejecutar")
