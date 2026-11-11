@@ -375,8 +375,8 @@ def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
       print("\n--Terminó el proceso: ", fProceso.id)
       fMemoria, disponibleEnMemoria = TerminarProceso( fProceso, fMemoria )
       print("Estado real del proceso finalizado:", proceso.estado)
-      return True, memoria, disponibleEnMemoria
-    return False, memoria, disponibleEnMemoria
+      return True, fMemoria, disponibleEnMemoria
+    return False, fMemoria, disponibleEnMemoria
 
 
 
@@ -590,23 +590,27 @@ while True:
       #------finalizado el bucle, cantProcesos = 0. Hago los informes:
       print("\n-----El Simulador Finalizó-----\n")
       print ("-"* 100)
-      print("\n-----COMENZANDO INFORMES------\n")
+      print("\n                        -----COMENZANDO INFORMES------\n")
 
       TEprom, TRprom = CalcularPromediosTEyTR()
       # rendimiento = CalcularRendimientoSistema ()
 
-      print("----Tiempos de Espera y Retorno para cada Proceso:-----")
+      print("          ----Tiempos de Espera y Retorno para cada Proceso:-----")
       print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Espera':<9} | {'T_Retorno':<10} |")
       print ("-"* 50)
       for p in terminados:
         print(f"{p.id:<5} | {p.estado:<10} | {p.TE:<9} | {p.TR:<10} |")
 
-      print(f"""\n ---Tiempos Promedios---
+      print(f"""\n                ---Tiempos Promedios---
       
-      --Tiempo de Espera Promedio: {TEprom}
+  --Tiempo de Espera Promedio: {TEprom}
 
-      --Tiempo de Retorno Promedio:  {TRprom}""")
-      print("\n------Fin De INFORMES------\n")
+  --Tiempo de Retorno Promedio:  {TRprom}""")
+      print("\n                          -------Fin De INFORMES-------\n")
+      print("----------------------------------Fin Del SIMULADOR-------------------------------------\n")
+
+
+      break
 
   
   
