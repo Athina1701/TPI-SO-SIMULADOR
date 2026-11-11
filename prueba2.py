@@ -97,3 +97,12 @@ def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un pr
   #si terminó de iterar es pq no encontró el proceso, por eso retorna False, deberia poner tmb un texto que idga que no se encontró
   return False, memoria #no se encontró el proceso en memoria.
 #CAMBIAR A RETURN FALSE
+
+import math
+#-------------------------------------------
+num = 10.66666
+print(" redondeo: ", round(10.66666))
+print(f" redondeo: {round(num)}")
+
+print(f" truncar: {math.trunc(num)} ")
+print(f" limitar decimal: {num:.1f}") #para limitar los decimales: 10.6666 = 10.7

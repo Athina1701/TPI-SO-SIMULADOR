@@ -21,6 +21,7 @@ class Proceso:
     self.id = id
     self.TA = TA
     self.TI = TI
+    self.resguardoTI = TI
     self.tamano = tamano
     self.estado = estado
     self.TR = 0. # TR = T_fin – TA
@@ -134,17 +135,18 @@ partición, tamaño de la partición, id de proceso asignado a la partición, fr
  El estado de la cola de procesos listos y listos/suspendidos."""
 
 def PresentacionDeSalida(): #muestro todas las colas
-  print("\n             -------- Tiempo Actual: ", tActual, " ---------\n")
+  print("\n             -------- TTIEMPO ACTUAL: ", tActual, " ---------\n")
   #Mostrar cola de Ejecucion
-  print("\n-----Estado del PROCESADOR Actualmente-----\n")
-  print(f"| {'Proceso Ejecutandose':^20} | {'Tiempo de Irrupción':^19} | ")
-  print("-" * 50)
-  if ejecucion["enUso"] == True:
-    pEjecutandose = ejecucion["procEjecutandose"]
-    print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |")
-  else: 
-    print(f"| {'Ninguno':^20} | {'0':^19} |")
-    print("\n--(Actualmente no hay procesos ejecutandose)--")
+  if tActual != 0:
+    print("\n-----Estado del PROCESADOR Actualmente-----\n")
+    print(f"| {'Proceso Ejecutandose':^20} | {'Tiempo de Irrupción':^19} | ")
+    print("-" * 50)
+    if ejecucion["enUso"] == True:
+      pEjecutandose = ejecucion["procEjecutandose"]
+      print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |")
+    else: 
+      print(f"| {'Ninguno':^20} | {'0':^19} |")
+      print("\n--(Actualmente no hay procesos ejecutandose)--")
 
   #Mostrar Memoria-----------------------------------------------------------------
   print("\n-----Tabla de PARTICIONES de MEMORIA-----")
@@ -166,7 +168,11 @@ def PresentacionDeSalida(): #muestro todas las colas
   texto = "\n-----Cola de Procesos LISTOS y SUSPENDIDOS-----"
   MostrarCola(listosSuspendidos, texto)
   texto = "\n-----Cola de Procesos TERMINADOS-----"
-  MostrarCola(terminados, texto)
+  print(texto)
+  print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
+  print("-" * 50)
+  for p in terminados:
+      print(f"| {p.id:<5} | {p.TA:>4} | {p.resguardoTI:>4} | {p.tamano:>10} | {p.estado:<10} |")
 
 
 #---------------------------------------------------------------
@@ -400,9 +406,11 @@ def CalcularPromediosTEyTR():
   return TEpromedio, TRpromedio
 
 
-def CalcularRendimientoSistema ():
-  pass
-#total de trabajos terminados / periodo de tiempo (o sae: cant colaTerminados divido tActual)
+def CalcularRendimientoSistema (colaTerminados, tActual):
+  totalProcTerm= len(colaTerminados)
+  rendimiento = totalProcTerm / tActual
+  return rendimiento
+#total de trabajos terminados / periodo de tiempo (o sea: cant colaTerminados divido tActual)
 
 
 def AumentarTiempo(colaListos, colaSuspendidos): #hacer
@@ -419,7 +427,7 @@ def AumentarTiempo(colaListos, colaSuspendidos): #hacer
 def informacion():
   print("""Este es un proyecto de la materia de Sistemas Operativos, trata de un simulador.. bla bla.."
 
-  El archivo a ingresar puede y debe tenr al forma: ....
+  El archivo a ingresar puede y debe tenr la forma: ....
   Al finalizar ... etc""")
   salir = input("Para volver al menu presione 'Enter':")
   if salir == "":
@@ -496,10 +504,10 @@ while True:
                 llegoProcNuevo = True #solo me interesa saber si llego un nuevo proceso, no si se cargó
                 if GM >= 5:
                   break
-            #  else:
-            #    break
-            if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
-              PresentacionDeSalida() #lo podria poner despues de poner a ejecutar proceso
+
+            #if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
+            #  PresentacionDeSalida() #lo podria poner despues de poner a ejecutar proceso
+                # ↑ esto lo cambio allá abajo ↓ despues de ejecutar un proceso
           else:
             print("---Cola de Nuevos Vacia---"
                   #todo esto que viene despues se borra
@@ -526,46 +534,21 @@ while True:
         else:
           print("Por el momento, no hay procesos el cola de listos para ejecutar")
 
+        if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
+            PresentacionDeSalida()
+
         AumentarTiempo(listos, listosSuspendidos)
 
       #Una vez aumentado el tiempo: Control de ejecucion:---------------------
-
-#SEGUN CHAT BORRO todo ESTe BLOQUE
-        """     if ejecucion["enUso"] == True:
-          if procesoActual == ejecucion["procEjecutandose"]: #pregunto si es el que recien se ejecutó, si es asi, entonces ejecuto el siguiente en listos
-            
-            "if listos: ultimo = listos[-1]
-            listos debería ser una lista
-            if listos: significa:
-            si la lista no está vacía, entra
-            si está vacía, no entra
-            eso es válido para listas
-            no es un bool en sí mismo, es una condición sobre la lista"
-
-            if listos: #pregunta si la lista no esta vacia
-              #ultimo = listos[-1]
-              i += 1
-              #if i != ultimo:
-              if i < (len(listos) -1) :
-                procesoActual = listos[i] #quiza deba usar pop, para ello debo modificar lo de eliminar de cola
-              #else:
-              #  i = 0 #reinicio i, pq ya llegó al fin de la cola de listos
-            else:
-              print("\n -- Por el momento, no hay procesos en la cola de listos que puedan ejecutarse... \n")
-            #else: es pq sigue esperando a ser ejecutado """
 #------------------------------------------------------------------------------------------------
 
-
-          #finalizó la ejecucion del proceso?
           #ESTO SE BORRA
         print("Proceso actual:", procesoActual.id)
         print("Proceso en CPU:", ejecucion["procEjecutandose"].id)
         print("TI:", ejecucion["procEjecutandose"].TI)
         print("Estado:", ejecucion["procEjecutandose"].estado)
 #---------------------------------------------------------------------------
-          
-          #segun chat aca puede estar el error, y el hecho de que no actualizo procActual
-
+        #finalizó la ejecucion del proceso?
         procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
         if procFinalizado: #Si terminó, asigno otro proceso
           print("estado del proceso terminado: despues de Dismunuir ti", procesoActual.id, procesoActual.estado) #borrar
@@ -588,34 +571,42 @@ while True:
           #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
 
       #------finalizado el bucle, cantProcesos = 0. Hago los informes:
-      print("\n-----El Simulador Finalizó-----\n")
+      print("\n                        -----El Simulador Finalizó-----")
       print ("-"* 100)
       print("\n                        -----COMENZANDO INFORMES------\n")
 
       TEprom, TRprom = CalcularPromediosTEyTR()
       # rendimiento = CalcularRendimientoSistema ()
 
-      print("          ----Tiempos de Espera y Retorno para cada Proceso:-----")
+      print("----Tiempos de ESPERA y RETORNO para Cada Proceso:-----\n")
       print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Espera':<9} | {'T_Retorno':<10} |")
       print ("-"* 50)
       for p in terminados:
-        print(f"{p.id:<5} | {p.estado:<10} | {p.TE:<9} | {p.TR:<10} |")
+        print(f"{p.id:<5} | {p.estado:<10} | {round(p.TE):<9} | {round(p.TR):<10} |")
 
-      print(f"""\n                ---Tiempos Promedios---
+      print(f"""\n                ---Tiempos Promedios: ---
       
-  --Tiempo de Espera Promedio: {TEprom}
+  --Tiempo de Espera Promedio: {TEprom:.1f}
 
-  --Tiempo de Retorno Promedio:  {TRprom}""")
-      print("\n                          -------Fin De INFORMES-------\n")
-      print("----------------------------------Fin Del SIMULADOR-------------------------------------\n")
+  --Tiempo de Retorno Promedio:  {TRprom:.1f}""") # :.1f es para limitar los decimales
+
+      rendimientoSistema = CalcularRendimientoSistema(terminados, tActual)
+
+      print(f"""\n           ----Rendimiento del Sistema: ----
+-Total de Procesos Terminados respecto del Tiempo Transcurrido:
+
+---Rendimiento: {rendimientoSistema:.1f} trabajos terminados por unidad de tiempo
+""")
+      print("\n                               -------Fin De INFORMES-------\n")
+
+
+      print("---------------------------------Gracias por usar el Simulador!-------------------------------------\n")
 
 
       break
 
   
-  
 
-  #hay algo en la cola de nuevos, que hace que el resto se ejecute mal
         
 
 
