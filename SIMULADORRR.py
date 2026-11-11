@@ -316,6 +316,7 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
       EliminarDeCola(colaListos, procActual)
       procActual.estado = "ejecutandose"
       colaEjecucion["procEjecutandose"] = procActual
+      print("se expropió un proceso")
     else: 
       print("\n Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
   #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
@@ -348,6 +349,8 @@ def TerminarProceso(proceso, fMemoria): #hacer
     ejecucion["enUso"] = False
     ejecucion["procEjecutandose"] = None
     #ejecucion["tiempoEjecucion"] = 0
+    print("estado del proceso terminado: antes: ",  proceso.estado) 
+
   else: 
       print("Hubo un error al finalizar el proceso.")
 
@@ -357,7 +360,7 @@ def TerminarProceso(proceso, fMemoria): #hacer
 def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
     colaEjecucion["procEjecutandose"].TI -=1
     if colaEjecucion["procEjecutandose"].TI == 0: 
-      print("-Terminó el proceso: ", colaEjecucion["procEjecutandose"].id) 
+      print("\n--Terminó el proceso: ", colaEjecucion["procEjecutandose"].id)
       fMemoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"], fMemoria )
       return True, memoria, disponibleEnMemoria
     return False, memoria, disponibleEnMemoria
@@ -427,11 +430,12 @@ GM = 0 # Grado de Multiprogramacion, maximo 5
 print("Bienvenido al Simulador... ETC...!")
 
 while True:
-  print("""Opciones Disponibles:
+  print("""\n------------------------------------------------------------------------
+  Opciones Disponibles:
     "0. Salir: ingrese '0' para salir
     "1. Informacion (recomendable)
     "2. Comenzar Simulador
-    -----------------------------------------------------------------------""")
+    ----------------------------------------------------------------------------------""")
 
   opcion = int(input("Seleccione una opción: "))
   if opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
@@ -464,20 +468,12 @@ while True:
       #MOSTRAR PROCESOS CARGADOS
       """ for p in nuevos:
         print("proceso: ", p.id )
-      esto era para probar si cargaba correcta,emte. Lo hacxe: el porblema no esta acá"""
-
-      i = 0 #el indice de las listas comienza en 0
+      esto era para probar si cargaba correcta,emte. Lo hace: el porblema no esta acá"""
       while cantProcesos > 0:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
         if GM < 5:
           if nuevos:
             llegoProcNuevo = False
-            """ otra forma:
-                i = 0
-                while GM <= 5 or i < len(nuevos):
-                  CargarListos()
-                  GM += 1.
-                """
                 #...
             # list() hace una copia de la lista nuevos, esto solo lo uso para iterar, sin embargo, modifico la lista original dentro del bucle y no la copia
             for proceso in list(nuevos): #mepa q lo ideal es usar pop
@@ -507,14 +503,13 @@ while True:
             print("Memoria disponible:", disponibleEnMemoria)
             #break ACA ESTA EL PROBLEMA
             #patrece q cuando la cantidad de procesos en = 1.
-            if cantProcesos == 0:
-              break #creo q es un problema de indices. se rompe cuando cantProc = 1.
+             #creo q es un problema de indices. se rompe cuando cantProc = 1.
 
         if listos: #pregunta si la lista no esta vacia
-          if i < len(listos): #para no pasarme del tamaño
-            procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
-            if procesoActual.TA <= tActual: 
-              EjecutarProceso(procesoActual, ejecucion, listos)
+          procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
+          if procesoActual.TA <= tActual: 
+            print("----proceso actual dentro de ejecutar proc: ", procesoActual) #borrar
+            EjecutarProceso(procesoActual, ejecucion, listos)
         else:
           print("Por el momento, no hay procesos el cola de listos para ejecutar")
 
@@ -522,8 +517,8 @@ while True:
 
       #Una vez aumentado el tiempo: Control de ejecucion:---------------------
 
-#SEGUN CHAT BORRO TODO ESET BLOQUE
-"""     if ejecucion["enUso"] == True:
+#SEGUN CHAT BORRO todo ESTe BLOQUE
+        """     if ejecucion["enUso"] == True:
           if procesoActual == ejecucion["procEjecutandose"]: #pregunto si es el que recien se ejecutó, si es asi, entonces ejecuto el siguiente en listos
             
             "if listos: ultimo = listos[-1]
@@ -533,6 +528,7 @@ while True:
             si está vacía, no entra
             eso es válido para listas
             no es un bool en sí mismo, es una condición sobre la lista"
+
             if listos: #pregunta si la lista no esta vacia
               #ultimo = listos[-1]
               i += 1
@@ -549,38 +545,39 @@ while True:
 
           #finalizó la ejecucion del proceso?
           #ESTO SE BORRA
-          print("Proceso actual:", procesoActual.id)
-          print("Proceso en CPU:", ejecucion["procEjecutandose"].id)
-          print("TI:", ejecucion["procEjecutandose"].TI)
-          print("Estado:", ejecucion["procEjecutandose"].estado)
+        print("Proceso actual:", procesoActual.id)
+        print("Proceso en CPU:", ejecucion["procEjecutandose"].id)
+        print("TI:", ejecucion["procEjecutandose"].TI)
+        print("Estado:", ejecucion["procEjecutandose"].estado)
 #---------------------------------------------------------------------------
           
           #segun chat aca puede estar el error, y el hecho de que no actualizo procActual
 
-          procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
-          if procFinalizado: #Si terminó, asigno otro proceso
+        procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
+        if procFinalizado: #Si terminó, asigno otro proceso
+          print("estado del proceso terminado: despues de Dismunuir ti",  procesoActual.estado) 
 
-            if listos:
-              procesoActual= listos[0] #le asigno el siguiente en la cola para ejecutar
-            
-            if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
-              EjecutarProceso(procesoActual, ejecucion, listos)
+          if listos:
+            procesoActual= listos[0] #le asigno el siguiente en la cola para ejecutar
+          
+          if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
+            EjecutarProceso(procesoActual, ejecucion, listos)
 
   #-------------termina control de ejecucion---------------
 
-            if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
-              for j, p in enumerate(listosSuspendidos):
-                if p.TA <= tActual:
-                  CargarListos(p, listos, listosSuspendidos)
-                  #REVISAR ESTO
+          if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
+            for j, p in enumerate(listosSuspendidos):
+              if p.TA <= tActual:
+                CargarListos(p, listos, listosSuspendidos)
+                #REVISAR ESTO
 
-            PresentacionDeSalida() #mostrar cada vez que se termina un proceso
-            #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
+          PresentacionDeSalida() #mostrar cada vez que se termina un proceso
+          #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
 
       #------finalizado el bucle, cantProcesos = 0. Hago los informes:
       print("\n-----El Simulador Finalizó-----\n")
       print ("-"* 100)
-      print("\n-----Comenzando Informes------")
+      print("\n-----COMENZANDO INFORMES------\n")
 
       TEprom, TRprom = CalcularPromediosTEyTR()
       # rendimiento = CalcularRendimientoSistema ()
@@ -591,11 +588,13 @@ while True:
       for p in terminados:
         print(f"{p.id:<5} | {p.estado:<10} | {p.TE:<9} | {p.TR:<10} |")
 
-      print(f""" ---Tiempos Promedios---
+      print(f"""\n ---Tiempos Promedios---
       
       --Tiempo de Espera Promedio: {TEprom}
 
       --Tiempo de Retorno Promedio:  {TRprom}""")
+      print("\n------Fin De INFORMES------\n")
+
   
   
 
