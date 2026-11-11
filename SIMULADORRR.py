@@ -358,10 +358,12 @@ def TerminarProceso(proceso, fMemoria): #hacer
  #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
 def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
-    colaEjecucion["procEjecutandose"].TI -=1
-    if colaEjecucion["procEjecutandose"].TI == 0: 
-      print("\n--Terminó el proceso: ", colaEjecucion["procEjecutandose"].id)
-      fMemoria, disponibleEnMemoria = TerminarProceso( ejecucion["procEjecutandose"], fMemoria )
+    fProceso  = colaEjecucion["procEjecutandose"]
+    fProceso.TI -=1
+    if fProceso.TI == 0: 
+      print("\n--Terminó el proceso: ", fProceso.id)
+      fMemoria, disponibleEnMemoria = TerminarProceso( fProceso, fMemoria )
+      print("Estado real del proceso finalizado:", proceso.estado)
       return True, memoria, disponibleEnMemoria
     return False, memoria, disponibleEnMemoria
 
@@ -555,13 +557,13 @@ while True:
 
         procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria)  #aca dentro llamo a la funcion terminar
         if procFinalizado: #Si terminó, asigno otro proceso
-          print("estado del proceso terminado: despues de Dismunuir ti",  procesoActual.estado) 
+          print("estado del proceso terminado: despues de Dismunuir ti", procesoActual.id, procesoActual.estado) #borrar
 
           if listos:
             procesoActual= listos[0] #le asigno el siguiente en la cola para ejecutar
           
-          if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
-            EjecutarProceso(procesoActual, ejecucion, listos)
+            if procesoActual.TA <= tActual: #la lista ya esta ordenada por TI, por eso solo pregunto por TA
+              EjecutarProceso(procesoActual, ejecucion, listos)
 
   #-------------termina control de ejecucion---------------
 

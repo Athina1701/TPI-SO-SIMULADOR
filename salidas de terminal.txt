@@ -1,0 +1,980 @@
+
+errores:
+
+
+Seleccione una opción: 2
+           > Comenzando el Simulador...
+-Por favor, cargue la ruta del archivo con los procesos, en el formato: txt 
+-Cargue aquí: C:\Users\athin\Downloads\labPython\TPI-SO-SIMULADOR\procesosPrueba.txt
+
+             -------- Tiempo Actual:  0  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|       Ninguno        |          0          |
+
+--(Actualmente no hay procesos ejecutandose)--
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    230    |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | nuevo      |
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    4 |        100 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+             -------- Tiempo Actual:  1  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p3          |          3          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    80     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+La CPU está ocupada por un proceso con menor TI
+
+             -------- Tiempo Actual:  2  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          4          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | suspendido |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | suspendido |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+             -------- Tiempo Actual:  6  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          0          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    50     |        p1        |       0      
+Par_6        |   150    |    80     |      Libre       |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p6    |    0 |    0 |        120 | ejecutandose |
+
+             -------- Tiempo Actual:  6  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          0          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    50     |        p1        |       0      
+Par_6        |   150    |    50     |        p1        |       0      
+Par_7        |   200    |    30     |      Libre       |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p6    |    0 |    0 |        120 | ejecutandose |
+
+
+                ACTUALIZADO
+Bienvenido al Simulador... ETC...!
+
+------------------------------------------------------------------------
+  Opciones Disponibles:
+    "0. Salir: ingrese '0' para salir
+    "1. Informacion (recomendable)
+    "2. Comenzar Simulador
+    ----------------------------------------------------------------------------------
+Seleccione una opción: 2
+           > Comenzando el Simulador...
+-Por favor, cargue la ruta del archivo con los procesos, en el formato: txt 
+-Cargue aquí: C:\Users\athin\Downloads\labPython\TPI-SO-SIMULADOR\procesosPrueba.txt
+
+             -------- Tiempo Actual:  0  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|       Ninguno        |          0          |
+
+--(Actualmente no hay procesos ejecutandose)--
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    230    |      Libre       |       0      
+Cantidad restante disponible en memoria:  230 
+
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | nuevo      |
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    4 |        100 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543875090>
+Proceso actual: p3
+Proceso en CPU: p3
+TI: 4
+Estado: ejecutandose
+
+             -------- Tiempo Actual:  1  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p3          |          3          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    80     |      Libre       |       0      
+Cantidad restante disponible en memoria:  80 
+
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p2    |    2 |    3 |         70 | nuevo      |
+| p1    |    2 |    5 |         50 | nuevo      |
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x000001554363B820>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p4
+Proceso en CPU: p3
+TI: 3
+Estado: ejecutandose
+
+             -------- Tiempo Actual:  2  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p3          |          2          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    100    |        p3        |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  10 
+
+ Cantidad de Procesos Actualmente:  6
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p4    |    1 |    3 |        150 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | suspendido |
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x000001554363B820>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p4
+Proceso en CPU: p3
+TI: 2
+Estado: ejecutandose
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x000001554363B820>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p4
+Proceso en CPU: p3
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p3
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: suspendido
+estado del proceso terminado: despues de Dismunuir ti p4 listo
+
+             -------- Tiempo Actual:  4  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p4          |          3          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    60     |      Libre       |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  60 
+
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p5    |    5 |    2 |         40 | nuevo      |
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p2    |    2 |    3 |         70 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543874F50>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p2
+Proceso en CPU: p4
+TI: 3
+Estado: ejecutandose
+
+             -------- Tiempo Actual:  5  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p4          |          2          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    40     |        p5        |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |        p4        |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  20 
+
+ Cantidad de Procesos Actualmente:  5
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p5    |    5 |    2 |         40 | listo      |
+| p2    |    2 |    3 |         70 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x000001554363B360>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p5
+Proceso en CPU: p4
+TI: 2
+Estado: ejecutandose
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x000001554363B360>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p5
+Proceso en CPU: p4
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p4
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: listo
+estado del proceso terminado: despues de Dismunuir ti p5 listo
+
+             -------- Tiempo Actual:  7  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p5          |          2          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    40     |        p5        |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |      Libre       |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  170 
+
+ Cantidad de Procesos Actualmente:  4
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p2    |    2 |    3 |         70 | listo      |
+| p6    |    0 |    5 |        120 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+| p4    |    1 |    0 |        150 | terminado  |
+---Cola de Nuevos Vacia---tiempo:  7 cantodad procesos: 4 grado multiprog:  4
+Listos: ['p2', 'p6', 'p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p5
+Memoria disponible: 170
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543874F50>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p2
+Proceso en CPU: p5
+TI: 2
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  8 cantodad procesos: 4 grado multiprog:  4
+Listos: ['p2', 'p6', 'p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p5
+Memoria disponible: 170
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543874F50>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p2
+Proceso en CPU: p5
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p5
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: terminado
+estado del proceso terminado: despues de Dismunuir ti p2 listo
+
+             -------- Tiempo Actual:  9  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p2          |          3          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    60     |      Libre       |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    150    |      Libre       |       0      
+Par_4        |   370    |    70     |        p2        |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  210 
+
+ Cantidad de Procesos Actualmente:  3
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p6    |    0 |    5 |        120 | listo      |
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+| p4    |    1 |    0 |        150 | terminado  |
+| p5    |    5 |    0 |         40 | terminado  |
+---Cola de Nuevos Vacia---tiempo:  9 cantodad procesos: 3 grado multiprog:  3
+Listos: ['p6', 'p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p2
+Memoria disponible: 210
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543880710>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p6
+Proceso en CPU: p2
+TI: 3
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  10 cantodad procesos: 3 grado multiprog:  3
+Listos: ['p6', 'p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p2
+Memoria disponible: 210
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543880710>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p6
+Proceso en CPU: p2
+TI: 2
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  11 cantodad procesos: 3 grado multiprog:  3
+Listos: ['p6', 'p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p2
+Memoria disponible: 210
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x0000015543880710>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p6
+Proceso en CPU: p2
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p2
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: terminado
+estado del proceso terminado: despues de Dismunuir ti p6 listo
+
+             -------- Tiempo Actual:  12  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p6          |          5          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    80     |      Libre       |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |        p6        |       0      
+Par_3        |   220    |    220    |      Libre       |       0      
+Par_4        |   370    |    70     |      Libre       |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  280 
+
+ Cantidad de Procesos Actualmente:  2
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p1    |    2 |    5 |         50 | listo      |
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+| p4    |    1 |    0 |        150 | terminado  |
+| p5    |    5 |    0 |         40 | terminado  |
+| p2    |    2 |    0 |         70 | terminado  |
+---Cola de Nuevos Vacia---tiempo:  12 cantodad procesos: 2 grado multiprog:  2
+Listos: ['p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p6
+Memoria disponible: 280
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x00000155435C7230>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p1
+Proceso en CPU: p6
+TI: 5
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  13 cantodad procesos: 2 grado multiprog:  2
+Listos: ['p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p6
+Memoria disponible: 280
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x00000155435C7230>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p1
+Proceso en CPU: p6
+TI: 4
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  14 cantodad procesos: 2 grado multiprog:  2
+Listos: ['p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p6
+Memoria disponible: 280
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x00000155435C7230>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p1
+Proceso en CPU: p6
+TI: 3
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  15 cantodad procesos: 2 grado multiprog:  2
+Listos: ['p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p6
+Memoria disponible: 280
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x00000155435C7230>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p1
+Proceso en CPU: p6
+TI: 2
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  16 cantodad procesos: 2 grado multiprog:  2
+Listos: ['p1']
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p6
+Memoria disponible: 280
+----proceso actual dentro de ejecutar proc:  <__main__.Proceso object at 0x00000155435C7230>
+
+ Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI
+Proceso actual: p1
+Proceso en CPU: p6
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p6
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: terminado
+estado del proceso terminado: despues de Dismunuir ti p1 listo
+
+             -------- Tiempo Actual:  17  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|          p1          |          5          |
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    50     |        p1        |       0      
+Par_6        |    50    |    510    |      Libre       |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |      Libre       |       0      
+Par_3        |   220    |    220    |      Libre       |       0      
+Par_4        |   370    |    70     |      Libre       |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  400 
+
+ Cantidad de Procesos Actualmente:  1
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+| p4    |    1 |    0 |        150 | terminado  |
+| p5    |    5 |    0 |         40 | terminado  |
+| p2    |    2 |    0 |         70 | terminado  |
+| p6    |    0 |    0 |        120 | terminado  |
+---Cola de Nuevos Vacia---tiempo:  17 cantodad procesos: 1 grado multiprog:  1
+Listos: []
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p1
+Memoria disponible: 400
+Por el momento, no hay procesos el cola de listos para ejecutar
+Proceso actual: p1
+Proceso en CPU: p1
+TI: 5
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  18 cantodad procesos: 1 grado multiprog:  1
+Listos: []
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p1
+Memoria disponible: 400
+Por el momento, no hay procesos el cola de listos para ejecutar
+Proceso actual: p1
+Proceso en CPU: p1
+TI: 4
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  19 cantodad procesos: 1 grado multiprog:  1
+Listos: []
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p1
+Memoria disponible: 400
+Por el momento, no hay procesos el cola de listos para ejecutar
+Proceso actual: p1
+Proceso en CPU: p1
+TI: 3
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  20 cantodad procesos: 1 grado multiprog:  1
+Listos: []
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p1
+Memoria disponible: 400
+Por el momento, no hay procesos el cola de listos para ejecutar
+Proceso actual: p1
+Proceso en CPU: p1
+TI: 2
+Estado: ejecutandose
+---Cola de Nuevos Vacia---tiempo:  21 cantodad procesos: 1 grado multiprog:  1
+Listos: []
+Suspendidos: []
+CPU ocupada: True
+Proceso ejecutándose: p1
+Memoria disponible: 400
+Por el momento, no hay procesos el cola de listos para ejecutar
+Proceso actual: p1
+Proceso en CPU: p1
+TI: 1
+Estado: ejecutandose
+
+--Terminó el proceso:  p1
+estado del proceso terminado: antes:  terminado
+Estado real del proceso finalizado: terminado
+estado del proceso terminado: despues de Dismunuir ti p1 terminado
+
+             -------- Tiempo Actual:  22  ---------
+
+
+-----Estado del PROCESADOR Actualmente-----
+
+| Proceso Ejecutandose | Tiempo de Irrupción | 
+--------------------------------------------------
+|       Ninguno        |          0          |
+
+--(Actualmente no hay procesos ejecutandose)--
+
+-----Tabla de PARTICIONES de MEMORIA-----
+ID_Particion | Comienzo | Tamaño KB | Proceso Asignado | Fragmentacion
+----------------------------------------------------------------------
+Par_0        |   450    |    100    | SIST. OPERATIVO  |              
+Par_1        |    0     |    990    |      Libre       |       0      
+Par_6        |    50    |    510    |      Libre       |       0      
+Par_7        |    90    |    20     |      Libre       |       0      
+Par_2        |   100    |    120    |      Libre       |       0      
+Par_3        |   220    |    220    |      Libre       |       0      
+Par_4        |   370    |    70     |      Libre       |       0      
+Par_5        |   440    |    10     |      Libre       |       0      
+Cantidad restante disponible en memoria:  450 
+
+ Cantidad de Procesos Actualmente:  0
+
+-----Cola de Procesos NUEVOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos LISTOS y SUSPENDIDOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+
+-----Cola de Procesos TERMINADOS-----
+| ID_P  |  TA  |  TI  | Tamaño KB  | Estado     |
+--------------------------------------------------
+| p3    |    0 |    0 |        100 | terminado  |
+| p4    |    1 |    0 |        150 | terminado  |
+| p5    |    5 |    0 |         40 | terminado  |
+| p2    |    2 |    0 |         70 | terminado  |
+| p6    |    0 |    0 |        120 | terminado  |
+| p1    |    2 |    0 |         50 | terminado  |
+
+-----El Simulador Finalizó-----
+
+----------------------------------------------------------------------------------------------------
+
+-----COMENZANDO INFORMES------
+
+----Tiempos de Espera y Retorno para cada Proceso:-----
+ID_P  | Estado     | T_Espera  | T_Retorno  |
+--------------------------------------------------
+p3    | terminado  | 0.0       | 4          |
+p4    | terminado  | 3.0       | 6          |
+p5    | terminado  | 2.0       | 4          |
+p2    | terminado  | 7.0       | 10         |
+p6    | terminado  | 12.0      | 17         |
+p1    | terminado  | 15.0      | 20         |
+
+ ---Tiempos Promedios---
+      
+      --Tiempo de Espera Promedio: 6.5
+
+      --Tiempo de Retorno Promedio:  10.166666666666666
+
+------Fin De INFORMES------
+
+
+------------------------------------------------------------------------
+  Opciones Disponibles:
+    "0. Salir: ingrese '0' para salir
+    "1. Informacion (recomendable)
+    "2. Comenzar Simulador
+    ----------------------------------------------------------------------------------
+Seleccione una opción: 0
+
+###estoy pensando en que salga directamente de todo. no que vuelva a menu
