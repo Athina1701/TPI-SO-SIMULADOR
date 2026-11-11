@@ -4,6 +4,7 @@
 
 #hice una copia pq voy a cambiar muchas cosas del anterior
 
+#esto podria estar en "informacion"
 """
 TA: tiempo de arribo
 TI: tiempo de irrupcion
@@ -201,7 +202,7 @@ def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
       if memoria[i].get("procesoAsignado") is None: #no hay proceso asignado a la particion
         
         if fproceso.tamano <= memoria[i].get("tamanio"):
-            sobraEspacio = memoria[i].get("tamanio") - fproceso.tamano
+            sobraEspacio = memoria[i].get("tamanio") - fproceso.tamano # si hay fragmentacion interna al asignar el proceso, creo otra particion
             disponibleEnMemoria =  disponibleEnMemoria - fproceso.tamano 
             if sobraEspacio > 0: #o sea, hay espacio libre para crear una particion libre.
               # def asignar id
@@ -216,6 +217,7 @@ def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
         #no ingresó pq la particion era pequeña:
         #else: 
         #  fragmentacion += memoria[i]["tamanio"] #siquiera hace falta, en mi opinion
+        
     return False  #no hubo espacio, por tanto no se cargó.
 
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
@@ -308,6 +310,7 @@ def CargarListos(fProceso, colaListos, colaActual):
   elif (fProceso.estado != "suspendido"): #si es igual a suspendido es pq ya estaba en la lista de suspendidos. no hace falta volvcer a ponerlo.
     #cargar en suspendidos, solo si es que NO estaba en suspendidos
     CargarListosYSuspendidos(fProceso, colaActual)
+  
   #si es == suspendido, no hago nada.
   #if not hayespacio: huboFragmentacion = True.
   #return huboFragmentacion
