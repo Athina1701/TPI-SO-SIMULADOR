@@ -180,6 +180,7 @@ def PresentacionDeSalida(): #muestro todas las colas
   else: 
     print(f"| {'Ninguno':^20} | {'0':^19} |")
     print("\n>(Actualmente no hay procesos ejecutandose)--")
+  print("-" * 100 , "\n")
 
 
 #---------------------------------------------------------------
@@ -473,7 +474,7 @@ procesoActual = None
 
 
 #menu: #mejorar la salida de texto
-print("Bienvenido al Simulador... ETC...!")
+print("Bienvenido al Simulador... ETC...!") #la idea es agregar: breve descripcion de lo q es el simu, Nro de grupo e integrantes
 
 while True:
   print("""\n------------------------------------------------------------------------
@@ -490,7 +491,7 @@ while True:
   if opcion == 0:
     break
   elif opcion == 1:
-    volverAMenu = informacion()
+    volverAMenu = informacion() #en info: ampliar detalles del simu, explicar las abreviaciones, quiza explicar como cargar el archivo y que formato de procesos admite
     if volverAMenu:
       continue
 
@@ -531,6 +532,7 @@ while True:
                 fragmentacion = CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
                 GM += 1
                 llegoProcNuevo = True #solo me interesa saber si llego un nuevo proceso, no si se cargó
+                print(f"\n > Llegó un NUEVO proceso: {proceso.id}. (Tiempo Actual = {tActual} )")
                 if GM >= 5:
                   break
 
@@ -594,7 +596,7 @@ while True:
                 fragmentacion = CargarListos(p, listos, listosSuspendidos)
                 #REVISAR ESTO
           if cantProcesos == 0:
-            print("\n\n            ----- Estado Final del Simulador ----")
+            print("\n\n               >>> Estado Final del Simulador <<<")
           #ahora que noto, vuelvo a mostrar todo per aumenta el tiempo tambien, entonces cuando hago el calculo de promedios me calcula con un tiempo extra. en vez de ser cantProc / tActual con Tactual siendo el tiempo que terminó el utlimo proceso, hace con tActual +1
           PresentacionDeSalida() #mostrar cada vez que se termina un proceso
           #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
@@ -625,12 +627,9 @@ while True:
 >-Rendimiento: {rendimientoSistema:.1f} trabajos terminados por unidad de tiempo
  (Total de Procesos Terminados respecto del Tiempo Transcurrido)
 """)
-      print("\n                               -------Fin De INFORMES-------\n")
-
-
-      print("---------------------------------Gracias por usar el Simulador!-------------------------------------\n")
-
-
+      print("""\n                               -------Fin De INFORMES-------
+                                          Gracias por usar el Simulador!\n""")
+      print("-" * 150)
       break
 
   
