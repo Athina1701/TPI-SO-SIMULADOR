@@ -64,6 +64,22 @@ def cargarNuevos(nombreArchivo, colaNuevos):
           # nombre = linea 0 , TA = linea 1, 
           #pNuevo = Proceso(p1,3, 5, 20, "nuevo")
 
+          
+          """otra forma de implementar lo que esta en simulador.py:
+          
+          if "," in linea:
+            campos = [campo.strip() for campo in linea.split(",")]
+          else:
+            campos = linea.split()
+          if len(campos) != 4:
+              print(f"Formato incorrecto: {linea!r}")
+              continue
+          try:
+              procesoNuevo = Proceso(campos[0], int(campos[1]), int(campos[2]),int(campos[3]), "nuevo")
+          except ValueError:
+              print(f"Tiempo de Arribo, Tiempo de Irrupcion y tamaño deben ser números: {linea!r}")
+              continue"""
+
           #TE = TR – TI, tengo 2 opciones: ya resto el TI aca y al terminar el proceso le sumo el retorno (que se calcula cuando termina)
           #procesoNuevo.TE = - procesoNuevo.TI
           #o la segunda opcion: ir sumando TE +1 por cada vez que el timpo pasa

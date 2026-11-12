@@ -1,7 +1,7 @@
 
 #ARCHIVO PRINCIPAL: simulador.py 
 #Version Limpiada. Dejé el archivo anterior por si tienen dudas con alguna funcion o cualquier otra cosa. Puede ver los comentarios 
-
+#HAY QUE HACER PARA QUE CARGUE LOS PROCESOS EN PANTALLA
 #esto podria estar en "informacion"
 """
 TA: tiempo de arribo
@@ -41,31 +41,78 @@ def existeArchivo(nombreArchivo):
     with open(nombreArchivo, 'r') as archi:
       primerLinea = archi.readline()
       if primerLinea == "":
-        print("El archivo esta vacio.")
+        print("-El archivo esta vacio.")
         return False
       return True
   except FileNotFoundError:
-    print("El archivo no fue encontrado.")
+    print("-El archivo no fue encontrado.")
     return False
-    #si es false, se le da otra chance para cargar, o que se cree desde 0. #HACERRRR
+  except OSError as error:
+    print(f"-No se pudo abrir el archivo: {error}")
+    return False
+#para ingresar los procesos por pantalla
+def crearArchivoProcesos():
+  print("Ingrese un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
+  print("Presione Enter en una línea vacía para terminar.")
+  while True:
+    nombreArchivo = input("-Ingrese el nombre del archivo nuevo, en el formato [procesosIngresados.txt]: ").strip()
+    if not nombreArchivo:
+      nombreArchivo = "procesosIngresados.txt"
+    if not nombreArchivo.lower().endswith(".txt"):
+      nombreArchivo += ".txt"
+    try:
+      archi = open(nombreArchivo, "x", encoding="utf-8")
+      break
+    except FileExistsError:
+      print("Ese archivo ya existe. Elija otro nombre para no sobrescribirlo.")
+    except OSError as error:
+      print(f"No se pudo crear el archivo: {error}")
+      return None
+
+  with archi:
+    while True:
+      linea = input("Proceso (Enter para terminar): ").strip()
+      if not linea:
+        break
+      archi.write(linea + "\n")
+
+  print(f"Procesos guardados en: {nombreArchivo}")
+  return nombreArchivo
 
 def cargarNuevos(nombreArchivo, colaNuevos):
     global cantProcesos
     with open(nombreArchivo, 'r') as archi:
     #Cargar procesos
       for linea in archi:
-        linea = linea.strip() #NOTA: NO SE COMO VAN A CARAGR LSO PROCESOS EN EL RCHIVO. VOY A TENR QUE HACER UN AFUNCION QUE ANALICE LA LINEA DE ARCHIVO
+        linea = linea.strip() 
+        #-------------------Control de Errores--------------------
         if linea: 
-          # El proces deberia estar cargado en archivo como: id,TA,TI,memoria.
-          linea = linea.split(",")
-          procesoNuevo = Proceso(linea[0], int(linea[1]), int(linea[2]), int(linea[3]), "nuevo")
+          if "," in linea:
+            linea = linea.strip().split(",")
+          else:
+            linea = linea.strip().split()
+          if len(linea) != 4:
+            print(f"\n>> Formato incorrecto: {linea!r}. Se descarta este proceso!")
+            continue
+          try:
+            ta = int(linea[1])
+            ti = int(linea[2])
+            tamano = int(linea[3])
+          except ValueError:
+            print(f"\n>> Error!Tiempo de Arribo, Tiempo de Irrupcion y tamaño deben ser números: {linea!r}. Se descarta este proceso!")
+            continue
+          if int(linea[3]) > 450:
+            print(f"\n>> Este proceso: {linea!r}, supera el tamaño de la memoria. Será descartado!")
+            continue
+          #------------------------------------
+          procesoNuevo = Proceso(linea[0], ta, ti , tamano, "nuevo")
           colaNuevos.append(procesoNuevo) 
           cantProcesos += 1  
-          if cantProcesos >= 10: #vigila que no se pase de 10 proc.
+          if cantProcesos >= 10:
             print("Se ha llegado al limite de procesos a cargar. Cantidad actual: ", cantProcesos)
             break
         else: 
-          continue #esto por si hay un renglon vacio.
+          continue #Para saltear renglones vacios.
     #Ordenar cola de procesos, segun tiempo de arribo.
     colaNuevos.sort(key=attrgetter("TA", "TI"))
 
@@ -81,6 +128,10 @@ def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
     indice += 1
   if seEncontroProc:
     del cola[resguardoIndice]
+
+def ControldeProcesos():
+
+  pass
 
 
 texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos', etc."
@@ -186,10 +237,9 @@ def MostrarFragmentacion(fFragmentacion):
   fragTotal = 0
   print("> Hubo FRAGMENTACIÓN en las particiones: ")
   for part in fFragmentacion:
-    print(f"    -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
+    print(f"   -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
-  print("---Fragmentacion Externa total en la memoria: ", fragTotal, ", en el Tiempo = ", tActual, "\n")
-
+  print("-Fragmentacion Externa total en la memoria: ", fragTotal, ", en el Tiempo = ", tActual, "\n")
 
 def JuntarParticiones(fmemoria):
   #ACLARACION: esta funcion NO COMPACTA espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
@@ -222,8 +272,8 @@ def LiberarMemoria(fproceso, memoria):
     fragmentacion = [] #reinicio las fragmentaciones que pudieron haber ocurrido.
   return False, memoria
 
-
 #------------------------------------fin MEMORIA---------------------------------------
+
 
 def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   fProceso.estado = "suspendido"
@@ -343,19 +393,28 @@ fragmentacion = []
 procesoActual = None
 
 #--------------------------------------------MENU:------------------------------------ #mejorar la salida de texto
-print("Bienvenido al Simulador... ETC...!") #la idea es agregar: breve descripcion de lo q es el simu, Nro de grupo e integrantes
+print("¡Bienvenido al SIMULADOR Del Equipo N° 7 de Sistemas Operativos!") #la idea es agregar: breve descripcion de lo q es el simu, Nro de grupo e integrantes
+print("""Este simulador trata sobre ...
+> Integrantes
+  > Alvarez Brivet, Camila
+  > Arias, Alejandro Nicolas
+  > Aristegui Gassmann, Valentina 
+  > Gutierrez Kolarik, Lucía Maylén
+  > Maldonado Karlen, Alan
+  > Ruiz Diaz, Mateo
+  > Zaracho Simonetto, Athina """)
 
 while True:
   print("""\n------------------------------------------------------------------------
   Opciones Disponibles:
-    "0. Salir: ingrese '0' para salir
+    "0. Salir: Ingrese '0' para salir
     "1. Informacion (recomendable)
     "2. Comenzar Simulador
 ----------------------------------------------------------------------------------""")
 
   opcion = int(input("Seleccione una opción: "))
   if opcion != 1 and opcion != 2 and opcion != 0:
-    print("\n-----Ha escrito una opcion invalida----- \n")
+    print("\n>> Ha escrito una opcion invalida... \n")
 
   if opcion == 0:
     break
@@ -364,23 +423,35 @@ while True:
     if volverAMenu:
       continue
 
-#-------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------
   elif opcion == 2:
     print("""\n           > COMENZANDO EL SIMULADOR...
--Por favor, cargue la ruta del archivo con los procesos, en el formato: txt """)
+-Elija un formato de carga de los procesos:
+  1. Cargar un archivo existente
+  2. Ingresar procesos y guardarlos en un archivo nuevo""")
+    modoCarga = input("Seleccione una opción: ").strip()
     existe = False
-    while not existe:
-      archivo = input("-Cargue aquí: ")
-      existe = existeArchivo(archivo)
-      if not existe:
-        archivo = input("""-ERROR!-Intente ingresarlo otra vez o intente con otro archivo (Ingrese '0' para volver al Menu) """)
+    if modoCarga == "1":
+      while not existe:
+        archivo = input("-Cargue la ruta (o ingrese '0' para volver al menú): ").strip()
         if archivo == "0":
-          break         
+          break
+        existe = existeArchivo(archivo)
+    elif modoCarga == "2":
+      archivo = crearArchivoProcesos()
+      existe = archivo is not None
+    else:
+      print("- Opción de carga inválida.")
     
     if existe:
       #Cargo los procesos en el archivo, a la cola de nuevos.
-      print("\n>>> Archivo Procesado Correctamente <<<\n")
       cargarNuevos(archivo, nuevos)
+      if not nuevos:
+        print("- No se encontraron procesos válidos para simular.")
+        continue
+
+      print("\n>>> Archivo Procesado Correctamente <<<\n")
+
       print(">" * 100)
       #Muestro los procesos cargados:
       texto = "\n---- Procesos En El Archivo Cargados Al Simulador: ----\n"
@@ -407,8 +478,6 @@ while True:
           procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
           if procesoActual.TA <= tActual: 
             EjecutarProceso(procesoActual, ejecucion, listos)
-        else:
-          print("--Por el momento, no hay procesos en cola de listos para ejecutar--")
 
         if llegoProcNuevo:
           PresentacionDeSalida()
@@ -418,13 +487,11 @@ while True:
         #finalizó la ejecucion del proceso?
         procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria) 
         if procFinalizado:
-          print("-Terminó un proceso")
           if listos:
             procesoActual= listos[0] #Siguiente proceso a ejecutar
             if procesoActual.TA <= tActual:
               EjecutarProceso(procesoActual, ejecucion, listos)
-          else:
-            print("--Por el momento, no hay procesos en cola de listos para ejecutar--")
+
   #-----------------------Termina control de ejecucion---------------
 
           for p in list(listosSuspendidos): #hay un proceso suspendido en espera de ser cargado.
