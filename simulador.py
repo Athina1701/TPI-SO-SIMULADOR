@@ -102,10 +102,10 @@ def MostrarMemoria(fMemoria, fragmentacion):
     if pAsignado is None:
       pAsignado = "Libre"
     print(f"| Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} |")
-  print(">Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
-
   if fragmentacion: 
     MostrarFragmentacion(fragmentacion)
+  else:
+    print(">Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
 
 
 def PresentacionDeSalida(): #muestro todas las colas
@@ -184,9 +184,9 @@ def CargarEnMemoria(fproceso):
 
 def MostrarFragmentacion(fFragmentacion):
   fragTotal = 0
-  print("---Hubo FRAGMENTACIÓN en las particiones: ")
+  print("> Hubo FRAGMENTACIÓN en las particiones: ")
   for part in fFragmentacion:
-    print(f"      -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
+    print(f"    -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
   print("---Fragmentacion Externa total en la memoria: ", fragTotal, ", en el Tiempo = ", tActual, "\n")
 
@@ -202,48 +202,39 @@ def JuntarParticiones(fmemoria):
     while i < longitudMemoria:  
       particionNueva = fmemoria[i].copy()
       if fmemoria[i].get("procesoAsignado") is None and (i < (longitudMemoria -1)): #particion actual libre?→ Si → Entonces me fijo las siguientes.
-        while ( i+1 < longitudMemoria) and (fmemoria[i+1].get("procesoAsignado") is None) : #si da True, es pq puedo unirlas
+        while ( i+1 < longitudMemoria) and (fmemoria[i+1].get("procesoAsignado") is None):
           particionNueva["tamanio"] += fmemoria[i +1].get("tamanio")
           i += 1
-      #en este caso, no hace falta eliminar la particion de la memoria, porque ya estoy colocando solo las nuevas particiones en otra lista de memoria.
-      memoriaCopy.append(particionNueva) #ya sea una particion ocupada o no, la copio a la nueva lista de memoria.
+      memoriaCopy.append(particionNueva) 
       i += 1
   else:
     memoriaCopy= fmemoria
-    #borrar los print
-  print("\n----cantidad de particiones en JUNTARMEMORIA: ", len(fmemoria))
-  print("cantidad de particiones en JUNTARMEMORIA de la mem original: ", len(memoria))
+  return memoriaCopy      
 
-  print("cantidad de particiones de la copia: ", len(memoriaCopy))
-
-  return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion      
-
-def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un proceso
+def LiberarMemoria(fproceso, memoria):
   global disponibleEnMemoria, fragmentacion
-  for particion in memoria: #me fijo en que lugar esta el proceso a quitar
+  for particion in memoria: #Busco particion donde esta el proceso a quitar.
     if str(particion.get("procesoAsignado")) == str(fproceso.id) :
-      #El str es para pasar ambos a tipo string para que no de error de tipos. Solo por las dudas. 
-      particion["procesoAsignado"] = None
-      #ojo que: no elimino el elemento de la lista "memoria", solo cambio el estado, ya está desocupado.
+      particion["procesoAsignado"] = None #cambio estado de la particion a LIBRE
       disponibleEnMemoria += fproceso.tamano
       memoria = JuntarParticiones(memoria)
       return True, memoria
     fragmentacion = [] #reinicio las fragmentaciones que pudieron haber ocurrido.
-  #si terminó de iterar es pq no encontró el proceso, por eso retorna False, deberia poner tmb un texto que idga que no se encontró
-  return False, memoria #no se encontró el proceso en memoria.
+  return False, memoria
 
 
-#----------------------------------------------------------------------------fin Memoria
+#------------------------------------fin MEMORIA---------------------------------------
 
 def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   fProceso.estado = "suspendido"
   listosSuspendidos.append(fProceso) #este lo agrega al final de la cola, no se si seria mejor acomodar segun TI.
+  listosSuspendidos.sort(key= attrgetter("TI")) 
   EliminarDeCola(colaActual, fProceso)
 
-def AgregarAListos(fProceso, colaListos):
+def AgregarAListos(fProceso, colaListos): #SRTF
   fProceso.estado = "listo"
   mayorTI = True
-  #cargar segun TI
+  #Cargar segun TI
   listosCopy = list(colaListos)
   for proc in listosCopy: 
     if (fProceso.TI < proc.TI): #el proceso nuevo a cargar tiene menor tiempo de irrupción
@@ -254,100 +245,54 @@ def AgregarAListos(fProceso, colaListos):
   if mayorTI: 
     colaListos.append(fProceso) #lo agrego al final, pq es el que mayor TI tiene
 
-#antes de cargar a listos, pregunto pot el tiempo actual
 def CargarListos(fProceso, colaListos, colaActual):
-      #se actualliza estado del proceso a listo
-      #a tener en cuenta: cargar los procesos segun TI.
-      # quiza deba hacer una funcion aparte para eso
-  hayEspacio, fFragmentacion = CargarEnMemoria(fProceso) #retorna v o f.
+  hayEspacio, fFragmentacion = CargarEnMemoria(fProceso) 
   if hayEspacio:
-    #cargar a listos
     AgregarAListos(fProceso, colaListos)
-    #elimina de la cola anterior, porque ya se cargo a listos o suspendidos.
-    EliminarDeCola(colaActual, fProceso)  #POR EL MOMENTO DEJO INACTIVO, PARA SABER SI ES ESTE EL PROBLEMA, ELIMINO AFUERA
-      #con "cola actual" me refiero a la cola de la que se elimina, puede ser cola de ejecucion, de nuevos, de suspendidos.
-  
-  #no hay espacio: 
-  elif (fProceso.estado != "suspendido"): #si es igual a suspendido es pq ya estaba en la lista de suspendidos. no hace falta volvcer a ponerlo.
-    #cargar en suspendidos, solo si es que NO estaba en suspendidos
+    EliminarDeCola(colaActual, fProceso) #ColaActual: cola de la cual se elimina el proceso (puede ser nuevos, suspendidos) 
+  #No hay espacio: 
+  elif (fProceso.estado != "suspendido"):  #Cargar en suspendidos, solo si es que NO estaba en suspendidos.
     CargarListosYSuspendidos(fProceso, colaActual)
-
   return fFragmentacion
   
-  #si es == suspendido, no hago nada.
-  #if not hayespacio: huboFragmentacion = True.
-  #return huboFragmentacion
-
-
-
-#def seleccionarProcesoSRTF(): # no hace falta porque ya esta ordenada la cola, o eso deberia. El orden se debe hacer en la cola de listos.
-
-#ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
-def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
-  #cambia estado a "ejecucion". Se llama a la funcion para cargar en cola de listos si es que hay otro proc en ejecucion.
-  #Nota: sí, tengo que agregarlo a la cola de lsitos, pero no tengo que preguntar si hay espacio en memoria, porque el proceso ya esta asignado en memoria
-  #overhead:
-  if colaEjecucion["enUso"] == True: #HAY proc EJecutandose: preguntar por TI y sacar proceso
-    
+def EjecutarProceso(procActual, colaEjecucion, colaListos): 
+  if colaEjecucion["enUso"] == True:
     procesoEjecutandose = colaEjecucion["procEjecutandose"]
-    #procesoEjecutandose.TI = colaEjecucion["tiempoEjecucion"] #creo qu eesta linea no hace falta. Es para ctualizar TI, pero spone que igual se va ir restando directamente del proceso actualemnte enejecucuion
     
-    if procActual.TI < procesoEjecutandose.TI: #lo saco al anterior de la cola ejecutandose
-      #llamo a la funcion de agragar a listos, sin preguntar por memoria.
-      AgregarAListos(procesoEjecutandose, colaListos) #aca adentro ya se actualiza su estado
-      #si no entra en el if es pq el proceso Actual es igual al del ejecutandose.
-      EliminarDeCola(colaListos, procActual)
-      procActual.estado = "ejecutandose"
-      colaEjecucion["procEjecutandose"] = procActual
-      print("> Se expropió un proceso. \n")
-    else: 
-      print("\n> Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
-  #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
+    if procActual.TI < procesoEjecutandose.TI: #Expropio
+      AgregarAListos(procesoEjecutandose, colaListos) #Ya esta asignado a memoria, no hace falta pregunta por espacio dispo.
+      print(f"> Se expropió el proceso {procesoEjecutandose.id}, por el proceso: {procActual.id}, TI: {procActual.TI} (tiempo = {tActual}). \n")
+    else: #print("\n> Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
+      return
   else:
-      colaEjecucion["enUso"] = True
-      EliminarDeCola(colaListos, procActual)
-      procActual.estado = "ejecutandose"
-      colaEjecucion["procEjecutandose"] = procActual
-  #no pongo en else, pq en ambos casos debo asignar el proceso actual en la cola de listos
-
-""" EliminarDeCola(colaListos, procActual)
+    colaEjecucion["enUso"] = True
+  EliminarDeCola(colaListos, procActual)
   procActual.estado = "ejecutandose"
   colaEjecucion["procEjecutandose"] = procActual
-  #colaEjecucion["tiempoEjecucion"] = procesoActual.TI #no hace falta este, creo
-  #NOTA: aca se deberia hacer un print general de el estado de todos los procesos y la cola de ejecucion """
-
-
-#  TR = T_fin – TA. El tiempo de fin seria el TActual en que termina
-def TerminarProceso(proceso, fMemoria): #hacer
+  
+def TerminarProceso(proceso, fMemoria): 
   global cantProcesos, GM
   liberadoCorrectamente, fMemoria = LiberarMemoria(proceso, fMemoria)
   if liberadoCorrectamente:
     cantProcesos -=1
     GM -= 1
     proceso.estado = "terminado"
-    #calcular TR del proceso
-    proceso.TR = tActual - proceso.TA #en esta funcion se "aumenta" el TR del proceso
+    proceso.TR = tActual - proceso.TA #Calculo su tiempo de retorno
     terminados.append(proceso)
-
     ejecucion["enUso"] = False
     ejecucion["procEjecutandose"] = None
-    #ejecucion["tiempoEjecucion"] = 0
-    print("estado del proceso terminado: antes: ", proceso.id,  proceso.estado) 
-
   else: 
       print("Hubo un error al finalizar el proceso.")
-
   return fMemoria, disponibleEnMemoria
- #pasarlo a cola de terminados y disminuir cant procesos. aca llamaria a la funcion LiberarMemoria
 
 def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
-    fProceso  = colaEjecucion["procEjecutandose"]
-    fProceso.TI -=1
-    if fProceso.TI == 0: 
-      print(f"\n>Terminó el proceso: {fProceso.id} (Tiempo = {tActual}) ")
-      fMemoria, disponibleEnMemoria = TerminarProceso( fProceso, fMemoria )
-      return True, fMemoria, disponibleEnMemoria
-    return False, fMemoria, disponibleEnMemoria
+  fProceso  = colaEjecucion["procEjecutandose"]
+  fProceso.TI -=1
+  if fProceso.TI == 0: 
+    print(f"\n>Terminó el proceso: {fProceso.id} (Tiempo = {tActual}) ")
+    fMemoria, disponibleEnMemoria = TerminarProceso( fProceso, fMemoria )
+    return True, fMemoria, disponibleEnMemoria
+  return False, fMemoria, disponibleEnMemoria
 
 
 def CalcularPromediosTEyTR():
@@ -363,18 +308,14 @@ def CalcularPromediosTEyTR():
   TRpromedio = TRpromedio / totalProcesos
   return TEpromedio, TRpromedio
 
-
 def CalcularRendimientoSistema (colaTerminados, tActual):
   totalProcTerm= len(colaTerminados)
   rendimiento = totalProcTerm / (tActual)
   return rendimiento
-#total de trabajos terminados / periodo de tiempo (o sea: cant colaTerminados divido tActual)
+  #total de trabajos terminados / periodo de tiempo (o sea: cantidad en colaTerminados divido tActual)
 
-
-def AumentarTiempo(colaListos, colaSuspendidos): #hacer
+def AumentarTiempo(colaListos, colaSuspendidos): 
   global tActual
-  #aumenta tiempo actual
-  #en esta funcion, deberia tambien aumentar lso tiempos de espera, o de retorno, no se, de cada proceso
   tActual +=1
   #Aumentar tiempos de espera de cada proceso:
   for proc in colaListos:
@@ -393,21 +334,15 @@ def informacion():
   return False
 
 
-
-
-#----------------------------------------------------------------------------------
-#MAIN:
-
+##MAIN: ------------------------------------------------------------------------------------------------------------------
 #declaracion de variables:
-
 cantProcesos = 0
 tActual = 0
 GM = 0 # Grado de Multiprogramacion, maximo 5
 fragmentacion = []
 procesoActual = None
 
-
-#menu: #mejorar la salida de texto
+#--------------------------------------------MENU:------------------------------------ #mejorar la salida de texto
 print("Bienvenido al Simulador... ETC...!") #la idea es agregar: breve descripcion de lo q es el simu, Nro de grupo e integrantes
 
 while True:
@@ -419,7 +354,7 @@ while True:
 ----------------------------------------------------------------------------------""")
 
   opcion = int(input("Seleccione una opción: "))
-  if opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
+  if opcion != 1 and opcion != 2 and opcion != 0:
     print("\n-----Ha escrito una opcion invalida----- \n")
 
   if opcion == 0:
@@ -440,11 +375,10 @@ while True:
       if not existe:
         archivo = input("""-ERROR!-Intente ingresarlo otra vez o intente con otro archivo (Ingrese '0' para volver al Menu) """)
         if archivo == "0":
-          break         #REVISAR ESTO
+          break         
     
     if existe:
-    #Sigo con el programa, por:
-    #una vez abierto el archivo:
+      #Cargo los procesos en el archivo, a la cola de nuevos.
       print("\n>>> Archivo Procesado Correctamente <<<\n")
       cargarNuevos(archivo, nuevos)
       print(">" * 100)
@@ -468,11 +402,6 @@ while True:
                   print(f"\n > Se admitió un proceso de Cola de Nuevos: {proceso.id}. (Tiempo Actual = {tActual} )")
                 if GM >= 5:
                   break
-          else:
-            print("---Cola de Nuevos Vacia---")
-
-            if ejecucion["enUso"]:
-              print(f"> Proceso ejecutándose: {ejecucion["procEjecutandose"].id} (Tiempo Actual = {tActual} ) ") #borrar
 
         if listos:
           procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
@@ -489,6 +418,7 @@ while True:
         #finalizó la ejecucion del proceso?
         procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria) 
         if procFinalizado:
+          print("-Terminó un proceso")
           if listos:
             procesoActual= listos[0] #Siguiente proceso a ejecutar
             if procesoActual.TA <= tActual:
@@ -502,19 +432,13 @@ while True:
 
           if cantProcesos == 0:
             print("\n\n               >>> Estado Final del Simulador <<<")
-          #ahora que noto, vuelvo a mostrar todo per aumenta el tiempo tambien, entonces cuando hago el calculo de promedios me calcula con un tiempo extra. en vez de ser cantProc / tActual con Tactual siendo el tiempo que terminó el utlimo proceso, hace con tActual +1
-          PresentacionDeSalida() #mostrar cada vez que se termina un proceso
-          #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
-
-      #------finalizado el bucle, cantProcesos = 0. Hago los informes:
+          PresentacionDeSalida() 
       print("\n                        -----El Simulador Finalizó-----")
+
       print ("-"* 100)
       print("\n                        ------COMENZANDO INFORMES------\n")
-
       TEprom, TRprom = CalcularPromediosTEyTR()
       rendimientoSistema = CalcularRendimientoSistema(terminados, tActual)
-
-
       print("----Tiempos de ESPERA y RETORNO para Cada Proceso:-----\n")
       print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Arribo':<9} | {'T_Espera':<9} | {'T_Retorno':<10} |")
       print ("-"* 50)
@@ -526,7 +450,7 @@ while True:
       
 >--Tiempo de Espera Promedio: {TEprom:.1f}
 
->--Tiempo de Retorno Promedio:  {TRprom:.1f}""") # :.1f es para limitar los decimales
+>--Tiempo de Retorno Promedio:  {TRprom:.1f}""") 
 
       print(f"""\n           ---- Rendimiento del Sistema: ----
 
@@ -534,7 +458,8 @@ while True:
  (Total de Procesos Terminados respecto del Tiempo Transcurrido)
 """)
       print("""\n                               -------Fin De INFORMES-------
-                              Gracias por usar el Simulador!\n""")
+                            
+                                ¡Gracias por usar el Simulador!""")
       print("-" * 100)
       break
 

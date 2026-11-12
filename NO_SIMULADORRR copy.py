@@ -313,6 +313,8 @@ def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un pr
 def CargarListosYSuspendidos(fProceso, colaActual): #hacer
   fProceso.estado = "suspendido"
   listosSuspendidos.append(fProceso) #este lo agrega al final de la cola, no se si seria mejor acomodar segun TI.
+  #listosSuspendidos.sort(key= attrgetter("TI")) #Esto es nuevo: Quiero ver si mejora el RENDIMIENTO
+  #No hizo diferencia
   EliminarDeCola(colaActual, fProceso)
 
 def AgregarAListos(fProceso, colaListos):
