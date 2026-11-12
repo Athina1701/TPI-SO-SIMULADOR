@@ -35,7 +35,7 @@ listos = []
 listosSuspendidos = []
 terminados = []
 #cola de ejecucion, lo aplico como un diccionario:
-ejecucion = { "enUso": False, "procEjecutandose": None, "tiempoEjecucion": 0 }
+ejecucion = { "enUso": False, "procEjecutandose": None }
 
 
 def existeArchivo(nombreArchivo):
@@ -109,7 +109,7 @@ texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos',
 def MostrarCola(cola, texto):
     print(texto)
     print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
-    print("-" * 50)
+    print("-" * 49)
     for p in cola:
         print(f"| {p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10} |")
 
@@ -117,15 +117,15 @@ def MostrarCola(cola, texto):
   #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
 
 def MostrarMemoria(fMemoria, fragmentacion):
-  print(f"{'ID_Particion':<12} | {'Comienzo':^4} | {'Tamaño KB':^8} | {'Proceso Asignado':^16} |")
-  print("-" * 70)
-  print(f"{'Par_0':<12} | {'450':^8} | {'100':^9} | {' SIST. OPERATIVO':^16} |")
+  print(f"| {'ID_Particion':<12} | {'Comienzo':^4} | {'Tamaño KB':^8} | {'Proceso Asignado':^16} |")
+  print("-" * 60)
+  print(f"| {'Par_0':<12} | {'450':^8} | {'100':^9} | {' SIST. OPERATIVO':^16} |")
   fMemoria.sort(key=itemgetter("comienzo")) 
   for part in fMemoria:
     pAsignado = part["procesoAsignado"]
     if pAsignado is None:
       pAsignado = "Libre"
-    print(f"Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} |")
+    print(f"| Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} |")
   print(">Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
 
   if fragmentacion: #pregunta por lista NO vacia
@@ -139,29 +139,19 @@ partición, tamaño de la partición, id de proceso asignado a la partición, fr
  El estado de la cola de procesos listos y listos/suspendidos."""
 
 def PresentacionDeSalida(): #muestro todas las colas
-  print("\n             -------- TIEMPO ACTUAL: ", tActual, " ---------\n")
-  #Mostrar cola de Ejecucion
-  if tActual != 0:
-    print("\n-----Estado del PROCESADOR Actualmente-----\n")
-    print(f"| {'Proceso Ejecutandose':^20} | {'Tiempo de Irrupción':^19} | ")
-    print("-" * 50)
-    if ejecucion["enUso"] == True:
-      pEjecutandose = ejecucion["procEjecutandose"]
-      print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |")
-    else: 
-      print(f"| {'Ninguno':^20} | {'0':^19} |")
-      print("\n--(Actualmente no hay procesos ejecutandose)--")
+  print("\n\n             -------- TIEMPO ACTUAL: ", tActual, " ---------\n")
+  print(" >Cantidad de Procesos Faltantes a terminar: ", cantProcesos)
+  print(" >Grado De Multiprogramación: ", GM, "\n")
 
   #Mostrar Memoria-----------------------------------------------------------------
   print("\n-----Tabla de PARTICIONES de MEMORIA-----")
   #mostrar: id part, dir de comienzo, tamaño, id proceso asignado, fragmentacion?????
   #mostrar tabla
   MostrarMemoria(memoria, fragmentacion)
-  print(" Cantidad de Procesos Actualmente: ", cantProcesos)
   #-----------------------------------------------------------------------------------
   print("\n-----Cola de Procesos NUEVOS-----")
   print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
-  print("-" * 50)
+  print("-" * 49)
   for p in nuevos:
     #if p.TA <= tActual:
     print(f"| {p.id:<5} | {p.TA:>4} | {p.TI:>4} | {p.tamano:>10} | {p.estado:<10} |")
@@ -171,12 +161,25 @@ def PresentacionDeSalida(): #muestro todas las colas
   MostrarCola(listos, texto)
   texto = "\n-----Cola de Procesos LISTOS y SUSPENDIDOS-----"
   MostrarCola(listosSuspendidos, texto)
-  texto = "\n-----Cola de Procesos TERMINADOS-----"
-  print(texto)
-  print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
-  print("-" * 50)
-  for p in terminados:
-      print(f"| {p.id:<5} | {p.TA:>4} | {p.resguardoTI:>4} | {p.tamano:>10} | {p.estado:<10} |")
+
+  if terminados: # para limpiar un poco la pantalla, es al pedo mostrarlo al comienzo. No uso la misma funcion mostrarCola pq necesitaba usar otro campo distinto al que uso en las otras colas (resguardoTI)
+    texto = "\n-----Cola de Procesos TERMINADOS-----"
+    print(texto)
+    print(f"| {'ID_P':<5} | {'TA':^4} | {'TI':^4} | {'Tamaño KB':^10} | {'Estado':<10} |")
+    print("-" * 49)
+    for p in terminados:
+        print(f"| {p.id:<5} | {p.TA:>4} | {p.resguardoTI:>4} | {p.tamano:>10} | {p.estado:<10} |")
+
+  #Mostrar cola de Ejecucion
+  print("\n-----Estado del PROCESADOR Actualmente-----\n")
+  print(f"| {'Proceso Ejecutandose':^20} | {'Tiempo de Irrupción':^19} | ")
+  print("-" * 46)
+  if ejecucion["enUso"] == True:
+    pEjecutandose = ejecucion["procEjecutandose"]
+    print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |")
+  else: 
+    print(f"| {'Ninguno':^20} | {'0':^19} |")
+    print("\n>(Actualmente no hay procesos ejecutandose)--")
 
 
 #---------------------------------------------------------------
@@ -234,7 +237,7 @@ def MostrarFragmentacion(fFragmentacion):
   for part in fFragmentacion:
     print(f"      -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
-  print("--Fragmentación total en la memoria: ", fragTotal, "\n")
+  print("--Fragmentación Externa total en la memoria: ", fragTotal, "\n")
 
 
 def JuntarParticiones(fmemoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
@@ -353,9 +356,9 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos): #hacer
       EliminarDeCola(colaListos, procActual)
       procActual.estado = "ejecutandose"
       colaEjecucion["procEjecutandose"] = procActual
-      print("se expropió un proceso")
+      print("> Se expropió un proceso. \n")
     else: 
-      print("\n Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
+      print("\n> Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
   #Si en este if, no entra, es pq no hay procesos ejecutandose: colaEjecucion["enUso"] == False:
   else:
       colaEjecucion["enUso"] = True
@@ -400,7 +403,7 @@ def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
     if fProceso.TI == 0: 
       print("\n>Terminó el proceso: ", fProceso.id)
       fMemoria, disponibleEnMemoria = TerminarProceso( fProceso, fMemoria )
-      print("Estado real del proceso finalizado:", proceso.estado) #BORRAR
+      print("Estado real del proceso finalizado:", fProceso.estado) #BORRAR
       return True, fMemoria, disponibleEnMemoria
     return False, fMemoria, disponibleEnMemoria
 
@@ -428,7 +431,7 @@ def CalcularPromediosTEyTR():
 
 def CalcularRendimientoSistema (colaTerminados, tActual):
   totalProcTerm= len(colaTerminados)
-  rendimiento = totalProcTerm / tActual
+  rendimiento = totalProcTerm / (tActual -1)
   return rendimiento
 #total de trabajos terminados / periodo de tiempo (o sea: cant colaTerminados divido tActual)
 
@@ -466,6 +469,7 @@ cantProcesos = 0
 tActual = 0
 GM = 0 # Grado de Multiprogramacion, maximo 5
 fragmentacion = []
+procesoActual = None
 
 
 #menu: #mejorar la salida de texto
@@ -477,7 +481,7 @@ while True:
     "0. Salir: ingrese '0' para salir
     "1. Informacion (recomendable)
     "2. Comenzar Simulador
-    ----------------------------------------------------------------------------------""")
+----------------------------------------------------------------------------------""")
 
   opcion = int(input("Seleccione una opción: "))
   if opcion != 1 and opcion != 2 and opcion != 0: #para controlar la entrada
@@ -492,7 +496,7 @@ while True:
 
 #-------------------------------------------------
   elif opcion == 2:
-    print("""           > Comenzando el Simulador...
+    print("""\n           > COMENZANDO EL SIMULADOR...
 -Por favor, cargue la ruta del archivo con los procesos, en el formato: txt """)
     existe = False
     while not existe:
@@ -502,20 +506,24 @@ while True:
         archivo = input("""-ERROR!-Intente ingresarlo otra vez o intente con otro archivo (Ingrese '0' para volver al Menu) """)
         if archivo == "0":
           break         #REVISAR ESTO
-     
+    
     if existe:
     #Sigo con el programa, por:
     #una vez abierto el archivo:
+      print("\n>>> Archivo Procesado Correctamente <<<\n")
       cargarNuevos(archivo, nuevos)
-      #MOSTRAR PROCESOS CARGADOS
-      """ for p in nuevos:
-        print("proceso: ", p.id )
-      esto era para probar si cargaba correcta,emte. Lo hace: el porblema no esta acá"""
+      print(">" * 100)
+      #Muestro los procesos cargados:
+      texto = "\n---- Procesos En El Archivo Cargados Al Simulador: ----\n"
+      MostrarCola(nuevos, texto)
+      print(">" * 100)
+      
       while cantProcesos > 0:
             #creo q aca deberia comenzar a incrementar manualemnte, o usando pop en la lista de nuevos.
+        llegoProcNuevo = False #aca se supone funciona bien
         if GM < 5:
           if nuevos:
-            llegoProcNuevo = False
+            #llegoProcNuevo = False Aca esta mal ubicado, muestra a cada rato las presentaciones de salida
                 #...
             # list() hace una copia de la lista nuevos, esto solo lo uso para iterar, sin embargo, modifico la lista original dentro del bucle y no la copia
             for proceso in list(nuevos): #mepa q lo ideal es usar pop
@@ -548,15 +556,13 @@ while True:
         if listos: #pregunta si la lista no esta vacia
           procesoActual = listos[0] #la lista ya esta ordenada por TI, entonces solo tomo el pimrer elemento
           if procesoActual.TA <= tActual: 
-            print("----proceso actual dentro de ejecutar proc: ", procesoActual.id) #borrar
+            print("----proceso actual fuera de ejecutar proc: ", procesoActual.id) #borrar
             EjecutarProceso(procesoActual, ejecucion, listos)
         else:
           print("Por el momento, no hay procesos el cola de listos para ejecutar")
 
         if llegoProcNuevo: #una de las peticiones es mostrar la presentacion de salida cada vez que se admite un proceso
-            if cantProcesos == 0:
-              print("      -----Estado Final del Simulador----")
-            PresentacionDeSalida()
+          PresentacionDeSalida()
 
         AumentarTiempo(listos, listosSuspendidos)
 
@@ -587,7 +593,9 @@ while True:
               if p.TA <= tActual:
                 fragmentacion = CargarListos(p, listos, listosSuspendidos)
                 #REVISAR ESTO
-
+          if cantProcesos == 0:
+            print("\n\n            ----- Estado Final del Simulador ----")
+          #ahora que noto, vuelvo a mostrar todo per aumenta el tiempo tambien, entonces cuando hago el calculo de promedios me calcula con un tiempo extra. en vez de ser cantProc / tActual con Tactual siendo el tiempo que terminó el utlimo proceso, hace con tActual +1
           PresentacionDeSalida() #mostrar cada vez que se termina un proceso
           #lo pongo a lo ultimo pq considero que en el mismo TActual se debe mover un proceso suspendido a listo
 
@@ -597,7 +605,8 @@ while True:
       print("\n                        ------COMENZANDO INFORMES------\n")
 
       TEprom, TRprom = CalcularPromediosTEyTR()
-      # rendimiento = CalcularRendimientoSistema ()
+      rendimientoSistema = CalcularRendimientoSistema(terminados, tActual)
+
 
       print("----Tiempos de ESPERA y RETORNO para Cada Proceso:-----\n")
       print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Espera':<9} | {'T_Retorno':<10} |")
@@ -605,15 +614,13 @@ while True:
       for p in terminados:
         print(f"{p.id:<5} | {p.estado:<10} | {round(p.TE):<9} | {round(p.TR):<10} |")
 
-      print(f"""\n                ---Tiempos Promedios: ---
+      print(f"""\n                --- Tiempos Promedios: ---
       
-  >--Tiempo de Espera Promedio: {TEprom:.1f}
+>--Tiempo de Espera Promedio: {TEprom:.1f}
 
-  >--Tiempo de Retorno Promedio:  {TRprom:.1f}""") # :.1f es para limitar los decimales
+>--Tiempo de Retorno Promedio:  {TRprom:.1f}""") # :.1f es para limitar los decimales
 
-      rendimientoSistema = CalcularRendimientoSistema(terminados, tActual)
-
-      print(f"""\n           ----Rendimiento del Sistema: ----
+      print(f"""\n           ---- Rendimiento del Sistema: ----
 
 >-Rendimiento: {rendimientoSistema:.1f} trabajos terminados por unidad de tiempo
  (Total de Procesos Terminados respecto del Tiempo Transcurrido)
