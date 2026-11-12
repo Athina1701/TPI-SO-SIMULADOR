@@ -9,7 +9,7 @@
 TA: tiempo de arribo
 TI: tiempo de irrupcion
 TR: tiempo de retorno
-TE: tiempo de espera
+TE: tiempo de espera. Para calcular tiempo de espera puedo hacer de dos formas: tActual - TI del proceso, al final, o ir incrementando TE + 1, cada vez que tActual se incrementa
 estados: "nuevo", "listo", "suspendido", "ejecutando" , "terminado"
 
 Las presentaciones de salida deberán realizarse cada vez que llega un nuevo proceso
@@ -81,6 +81,21 @@ def cargarNuevos(nombreArchivo, colaNuevos):
   #ordena procesos. ordeno la cola de nuevos por TA, si hay dos con TA iguales, ordeno por id.
     colaNuevos.sort(key=attrgetter("TA", "TI"))
      #OTRA FORMA: colaNuevos = sorted(nuevos, key = attrgetter('TA', 'TI') ) #revisar #probe y funciona. 
+""" EN EL ARCHIVO simuladro.py, cambié asi, porque no funcionaba para el salto de linea: 
+      for linea in archi:
+        linea = linea.strip() #saca los saltos de linea
+          #NOTA: NO SE COMO VAN A CARAGR LSO PROCESOS EN EL RCHIVO. VOY A TENR QUE HACER UN AFUNCION QUE ANALICE LA LINEA DE ARCHIVO
+        if linea: 
+          # El proces deberia estar cargado en archivo como: id,TA,TI,memoria.
+          linea = linea.split(",")
+          procesoNuevo = Proceso(linea[0], int(linea[1]), int(linea[2]), int(linea[3]), "nuevo")
+          colaNuevos.append(procesoNuevo) 
+          cantProcesos += 1  
+          if cantProcesos >= 10: #vigila que no se pase de 10 proc.
+            print("Se ha llegado al limite de procesos a cargar. Cantidad actual: ", cantProcesos)
+            break
+        else: 
+          continue"""
 
 def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
   """colaCopy = list(cola)
@@ -176,10 +191,10 @@ def PresentacionDeSalida(): #muestro todas las colas
   print("-" * 46)
   if ejecucion["enUso"] == True:
     pEjecutandose = ejecucion["procEjecutandose"]
-    print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |")
+    print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} | \n")
   else: 
     print(f"| {'Ninguno':^20} | {'0':^19} |")
-    print("\n>(Actualmente no hay procesos ejecutandose)--")
+    print("\n>(Actualmente no hay procesos ejecutandose)--\n")
   print("-" * 100 , "\n")
 
 
@@ -187,19 +202,21 @@ def PresentacionDeSalida(): #muestro todas las colas
 # Por el momento, la memoria se maneja d esta forma. Es lo que se me ocurrió
 # Es una lista de diccionarios. Las particiones son los diccionarios
 
-memoria = []
+"""memoria = []
 particionInicial = { "id": "1", "comienzo": 0, "tamanio": 450, "procesoAsignado": None, "fragmentacion": 0 }
 #en la consigna piden al fragmentacion. Pero no entiendo para qué, si es variable
 #hay que revisar en el def cargarmemoria, los ID porque se repiten.
-memoria.append(particionInicial)
-""" o lo que es lo mismo:
+memoria.append(particionInicial)"""
+#o lo que es lo mismo:
 memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ]
-"""
+#en simulador.py le dejé este ultimo. por si funcioan mal, es esto.
 
 disponibleEnMemoria = 450 #este debo ir disminuyendolo, y aumentarlo al liberar memoria.
 
 #-----------------------------------
 #actualizacion: saque a DisponibleEnMemoria como parametro, para usarla como global, y se actualice automaticamente
+#actualizacion: mejoré lo de los ID, puse un contador externo para que cada partcicion tenga su id unico:
+#contadorIDparticion = 2 → cargo nueva particion → contadorID +1
 def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
   global disponibleEnMemoria
   fFragmentacion= [] #la idea es reiniciar la lista de fragmentacion 
@@ -238,7 +255,7 @@ def MostrarFragmentacion(fFragmentacion):
   for part in fFragmentacion:
     print(f"      -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
-  print("--Fragmentación Externa total en la memoria: ", fragTotal, "\n")
+  print("--Fragmentacion Externa total en la memoria: ", fragTotal, "en el Tiempo = ", tActual, "\n")
 
 
 def JuntarParticiones(fmemoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
@@ -532,7 +549,12 @@ while True:
                 fragmentacion = CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
                 GM += 1
                 llegoProcNuevo = True #solo me interesa saber si llego un nuevo proceso, no si se cargó
-                print(f"\n > Llegó un NUEVO proceso: {proceso.id}. (Tiempo Actual = {tActual} )")
+                if proceso.TA == tActual:
+                  print(f"\n > Llegó un NUEVO proceso: {proceso.id}. (Tiempo Actual = {tActual} )")
+                else: 
+                  print(f"\n > se admitió un proceso de Cola de Nuevos: {proceso.id}. (Tiempo Actual = {tActual} )")
+                #Hago la distincion solo por el texto de salida, para que sea mas preciso: porque si Proc_5 tiene tA = 5, pero estamos en Tactual = 12, 
+                #no es que recien acaba de llegar un proceso a nuevos, Es que recien se lo puede adimitir en el simulador, pq bajó el GM
                 if GM >= 5:
                   break
 
@@ -595,6 +617,13 @@ while True:
               if p.TA <= tActual:
                 fragmentacion = CargarListos(p, listos, listosSuspendidos)
                 #REVISAR ESTO
+
+          """Lo cambié asi en simulador.py:
+            for p in list(listosSuspendidos): #hay un proceso suspendido en espera de ser cargado.
+            #if p.TA <= tActual: esto no es necesario. Todos los proc que estan aca ya cumplieron 
+              fragmentacion = CargarListos(p, listos, listosSuspendidos)
+              #REVISAR ESTO"""
+
           if cantProcesos == 0:
             print("\n\n               >>> Estado Final del Simulador <<<")
           #ahora que noto, vuelvo a mostrar todo per aumenta el tiempo tambien, entonces cuando hago el calculo de promedios me calcula con un tiempo extra. en vez de ser cantProc / tActual con Tactual siendo el tiempo que terminó el utlimo proceso, hace con tActual +1
@@ -611,10 +640,11 @@ while True:
 
 
       print("----Tiempos de ESPERA y RETORNO para Cada Proceso:-----\n")
-      print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Espera':<9} | {'T_Retorno':<10} |")
+      print(f"{'ID_P':<5} | {'Estado':<10} | {'T_Arribo':<9} | {'T_Espera':<9} | {'T_Retorno':<10} |")
       print ("-"* 50)
+      terminados.sort(key=attrgetter("TA"))
       for p in terminados:
-        print(f"{p.id:<5} | {p.estado:<10} | {round(p.TE):<9} | {round(p.TR):<10} |")
+        print(f"{p.id:<5} | {p.estado:<10} | {p.TA:<9} | {round(p.TE):<9} | {round(p.TR):<10} |")
 
       print(f"""\n                --- Tiempos Promedios: ---
       
