@@ -116,10 +116,10 @@ def MostrarCola(cola, texto):
   #lo que hace el ''TA':>4' es rellenar con espacios vacios a la izq, si el texto tiene menos de 4 caracteres.
   #print("-" * 50) lo que hace es imprimir 50 guiones, para separar el titulo del  contenido
 
-def MostrarMemoria(fMemoria):
+def MostrarMemoria(fMemoria, fragmentacion):
   print(f"{'ID_Particion':<12} | {'Comienzo':^4} | {'Tamaño KB':^8} | {'Proceso Asignado':^16} | {'Fragmentacion':<13}")
   print("-" * 70)
-  print(f"{'Par_0':<12} | {'450':^8} | {'100':^9} | {'SIST. OPERATIVO':^16} | {' ':<13}")
+  print(f"{'Par_0':<12} | {'450':^8} | {'100':^9} | {' SIST. OPERATIVO':^16} | {' ':<13}")
   fMemoria.sort(key=itemgetter("comienzo")) 
   for part in fMemoria:
     pAsignado = part["procesoAsignado"]
@@ -128,6 +128,9 @@ def MostrarMemoria(fMemoria):
     print(f"Par_{part["id"]:<8} | {part["comienzo"]:^8} | {part["tamanio"]:^9} | {pAsignado:^16} | {0:^13}")
   print("Cantidad restante disponible en memoria: ", disponibleEnMemoria, "\n")
   print("cantidad de particiones: ", len(memoria))
+  if fragmentacion: #pregunta por lista NO vacia
+    MostrarFragmentacion(fragmentacion)
+
 
 """El simulador deberá presentar como salida la siguiente información:
  El estado del procesador (proceso que se encuentra corriendo en ese instante)
@@ -153,7 +156,7 @@ def PresentacionDeSalida(): #muestro todas las colas
   print("\n-----Tabla de PARTICIONES de MEMORIA-----")
   #mostrar: id part, dir de comienzo, tamaño, id proceso asignado, fragmentacion?????
   #mostrar tabla
-  MostrarMemoria(memoria)
+  MostrarMemoria(memoria, fragmentacion)
   print(" Cantidad de Procesos Actualmente: ", cantProcesos)
   #-----------------------------------------------------------------------------------
   print("\n-----Cola de Procesos NUEVOS-----")
@@ -195,6 +198,7 @@ disponibleEnMemoria = 450 #este debo ir disminuyendolo, y aumentarlo al liberar 
 #actualizacion: saque a DisponibleEnMemoria como parametro, para usarla como global, y se actualice automaticamente
 def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
   global disponibleEnMemoria
+  fFragmentacion= [] #la idea es reiniciar la lista de fragmentacion 
   longitudMemoria = len(memoria) 
   if longitudMemoria > 0: #por las dudas no sea una lista vacia. pero capaz no sea necesario
     memoria.sort(key=itemgetter("tamanio")) #ordeno la lista para hacer ASIGNACION BEST FIT
@@ -212,16 +216,26 @@ def CargarEnMemoria(fproceso): #REVISAR #por las, poner como parametro memoria
 
             # de memoria[i] (o sea, la particion que esta libre en la cual voy a poner el proceso actual) me quedo con el id y el comienzo, el resto de los datos actualizo:
             memoria[i]["tamanio"] = fproceso.tamano
-            memoria[i]["procesoAsignado"] = fproceso.id
-            return True #manda un mensaje de que el proceso se cargo en memoria.
-        #no ingresó pq la particion era pequeña:
-        #else: 
-        #  fragmentacion += memoria[i]["tamanio"] #siquiera hace falta, en mi opinion
+            memoria[i]["procesoAsignado"] = fproceso.id            
+            return True, fFragmentacion #manda un mensaje de que el proceso se cargo en memoria.
+        else: #no ingresó pq la particion era pequeña:
+          #fragmentacion:
+          fFragmentacion.append(memoria[i]) #guardo la particion la cual el proceso no pudo entrar
         
-    return False  #no hubo espacio, por tanto no se cargó.
+    return False, fFragmentacion  #no hubo espacio, por tanto no se cargó.
 
 #CargarEnMemoria mas o menos estaria hecho. pero hay que hacer otra funcion que sea liberar memoria. y en el caso que se liberen dos particiones contiguas. unirlas en una sola particion. para poder ingresar un proceso mas grande.
 #Solucion: Version 1: uso un ordenador de lista
+
+#if fragmentacion: #en el codigo ppal.
+def MostrarFragmentacion(fFragmentacion):
+  fragTotal = 0
+  print("---Hubo FRAGMENTACIÓN en las particiones: ---")
+  for part in fFragmentacion:
+    print(f"      -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
+    fragTotal += part["tamanio"]
+  print("--Fragmentación total en la memoria: ", fragTotal, "\n")
+
 
 def JuntarParticiones(fmemoria): #revisar, se lo puede mejorar (el indice i+1 me hace ruido)
   """#OJO: esta funcion NO compacta espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
@@ -259,7 +273,7 @@ def JuntarParticiones(fmemoria): #revisar, se lo puede mejorar (el indice i+1 me
   return memoriaCopy #si o si debo retornar las variables que fueron reasignadas en la funcion      
 
 def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un proceso
-  global disponibleEnMemoria
+  global disponibleEnMemoria, fragmentacion
   for particion in memoria: #me fijo en que lugar esta el proceso a quitar
     if str(particion.get("procesoAsignado")) == str(fproceso.id) :
       #El str es para pasar ambos a tipo string para que no de error de tipos. Solo por las dudas. 
@@ -268,9 +282,10 @@ def LiberarMemoria(fproceso, memoria): #revisar #este se usaria al teminar un pr
       disponibleEnMemoria += fproceso.tamano
       memoria = JuntarParticiones(memoria)
       return True, memoria
+    fragmentacion = [] #reinicio las fragmentaciones que pudieron haber ocurrido.
   #si terminó de iterar es pq no encontró el proceso, por eso retorna False, deberia poner tmb un texto que idga que no se encontró
   return False, memoria #no se encontró el proceso en memoria.
-#CAMBIAR A RETURN FALSE
+
 
 #----------------------------------------------------------------------------fin Memoria
 
@@ -298,7 +313,7 @@ def CargarListos(fProceso, colaListos, colaActual):
       #se actualliza estado del proceso a listo
       #a tener en cuenta: cargar los procesos segun TI.
       # quiza deba hacer una funcion aparte para eso
-  hayEspacio = CargarEnMemoria(fProceso) #retorna v o f.
+  hayEspacio, fFragmentacion = CargarEnMemoria(fProceso) #retorna v o f.
   if hayEspacio:
     #cargar a listos
     AgregarAListos(fProceso, colaListos)
@@ -310,6 +325,8 @@ def CargarListos(fProceso, colaListos, colaActual):
   elif (fProceso.estado != "suspendido"): #si es igual a suspendido es pq ya estaba en la lista de suspendidos. no hace falta volvcer a ponerlo.
     #cargar en suspendidos, solo si es que NO estaba en suspendidos
     CargarListosYSuspendidos(fProceso, colaActual)
+
+  return fFragmentacion
   
   #si es == suspendido, no hago nada.
   #if not hayespacio: huboFragmentacion = True.
@@ -448,6 +465,7 @@ def informacion():
 cantProcesos = 0
 tActual = 0
 GM = 0 # Grado de Multiprogramacion, maximo 5
+fragmentacion = []
 
 
 #menu: #mejorar la salida de texto
@@ -502,7 +520,7 @@ while True:
             # list() hace una copia de la lista nuevos, esto solo lo uso para iterar, sin embargo, modifico la lista original dentro del bucle y no la copia
             for proceso in list(nuevos): #mepa q lo ideal es usar pop
               if proceso.TA <= tActual:
-                CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
+                fragmentacion = CargarListos(proceso, listos, nuevos) #aca se carga en listos, a memoria, o a listos y suspendidos, y se saca de la cola de nuevos
                 GM += 1
                 llegoProcNuevo = True #solo me interesa saber si llego un nuevo proceso, no si se cargó
                 if GM >= 5:
@@ -567,7 +585,7 @@ while True:
           if len(listosSuspendidos) > 0: #hay un proceso en espera de ser cargado.
             for j, p in enumerate(listosSuspendidos):
               if p.TA <= tActual:
-                CargarListos(p, listos, listosSuspendidos)
+                fragmentacion = CargarListos(p, listos, listosSuspendidos)
                 #REVISAR ESTO
 
           PresentacionDeSalida() #mostrar cada vez que se termina un proceso
@@ -596,9 +614,9 @@ while True:
       rendimientoSistema = CalcularRendimientoSistema(terminados, tActual)
 
       print(f"""\n           ----Rendimiento del Sistema: ----
--Total de Procesos Terminados respecto del Tiempo Transcurrido:
 
 ---Rendimiento: {rendimientoSistema:.1f} trabajos terminados por unidad de tiempo
+(-Total de Procesos Terminados respecto del Tiempo Transcurrido)
 """)
       print("\n                               -------Fin De INFORMES-------\n")
 

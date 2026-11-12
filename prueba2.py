@@ -106,3 +106,9 @@ print(f" redondeo: {round(num)}")
 
 print(f" truncar: {math.trunc(num)} ")
 print(f" limitar decimal: {num:.1f}") #para limitar los decimales: 10.6666 = 10.7
+
+fragmentacion = []
+
+if not fragmentacion: #asi tal cual, muestra: " fragment:  [] ", pq la lista esta vacia. ASi que FUNCIONA
+  print("fragment: " ,fragmentacion)
+#solo que yo tengo que preguntar por if fragmentacion:,por el si
