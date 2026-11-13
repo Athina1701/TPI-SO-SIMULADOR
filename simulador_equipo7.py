@@ -1,18 +1,7 @@
 
-#ARCHIVO PRINCIPAL: simulador.py 
-#Version Limpiada. Dejé el archivo anterior por si tienen dudas con alguna funcion o cualquier otra cosa. Puede ver los comentarios 
-#HAY QUE HACER PARA QUE CARGUE LOS PROCESOS EN PANTALLA
-#esto podria estar en "informacion"
-"""
-TA: tiempo de arribo
-TI: tiempo de irrupcion
-TR: tiempo de retorno
-TE: tiempo de espera
-estados: "nuevo", "listo", "suspendido", "ejecutando" , "terminado"
+#ARCHIVO PRINCIPAL: simulador_equipo7.py 
+#Version Limpia. Dejé el archivo anterior por si tienen dudas con alguna funcion o cualquier otra cosa. Puede ver los comentarios 
 
-Las presentaciones de salida deberán realizarse cada vez que llega un nuevo proceso
-y se termina un proceso en ejecución.
-"""
 from operator import attrgetter, itemgetter
 
 class Proceso:
@@ -52,10 +41,10 @@ def existeArchivo(nombreArchivo):
     return False
 #para ingresar los procesos por pantalla
 def crearArchivoProcesos():
-  print("Ingrese un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
+  print("Se ingresa un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
   print("Presione Enter en una línea vacía para terminar.")
   while True:
-    nombreArchivo = input("-Ingrese el nombre del archivo nuevo, en el formato [procesosIngresados.txt]: ").strip()
+    nombreArchivo = input("-Primero ingrese el nombre del archivo nuevo, en el formato [procesosIngresados.txt]: ").strip()
     if not nombreArchivo:
       nombreArchivo = "procesosIngresados.txt"
     if not nombreArchivo.lower().endswith(".txt"):
@@ -374,10 +363,31 @@ def AumentarTiempo(colaListos, colaSuspendidos):
     proc.TE += 1
 
 def informacion():
-  print("""Este es un proyecto de la materia de Sistemas Operativos, trata de un simulador.. bla bla.."
+  print("""--------------------------------------- Informacion ---------------------------------------
+Este es un Trabajo Practico de la asignatura de Sistemas Operativos. 
+En este simuulador se implementa la gestion de memoria de particiones variables. Donde la memoria esta dispuesta de la siguiente manera: 
+  >100K destinados al Sistema Operativo
+  >450K para trabajos de usuarios.
+Se permite un maximo de 10 procesos. Se pueden cargar manualmente por teclado, o por medio de un archivo:
+  > Si el archivo a ingresar no se encuentra en la misma carpeta del codigo, se deberá ingresar la ruta de acceso completa. 
+  > Pudiendo ingresarse la ruta de acceso relativa si se copiase dicho archivo, dentro de la carpeta
+La planificacion de procesos es a corto plazo → Incluye 5 estados: "nuevo", "listo", "suspendido", "ejecutando" , "terminado"
 
-  El archivo a ingresar puede y debe tenr la forma: ....
-  Al finalizar ... etc""")
+>> Las abreviaciones usadas en el programa son:
+  TA: tiempo de arribo
+  TI: tiempo de irrupcion
+  TR: tiempo de retorno
+  TE: tiempo de espera
+  tActual: representa el tiempo que trascurre en el programa
+  GM: grado de multiprogramacion. Refiere a la cantidad de proceso en las colas de: listos, suspendidos y ejecucion. Siendo el limite de 5 en total.
+
+Respecto al formato de los procesos que admite este programa 
+  → Deben tener la forma: " ID_Proceso TA TI Tamaño ", separado por espacios (P1 0 20 180) o por comas (P1,0,20,180).
+
+  Al finalizar, se presentan los informes de promedios de tiempo de espera, tiempos de retorno y el rendimiento del sistema.
+>> Nuestro archivo de prueba es: procesos.txt
+El programa puede ejecutarlo en un terminal dedicado (en VSCode) o abriendo el terminal externo (ctrl+shift+c), una vez abierto→ escribir: python simulador_equipo7.py (copiar la ruta relativa)
+""")
   salir = input("Para volver al menu presione 'Enter':")
   if salir == "":
     return True
@@ -392,10 +402,11 @@ GM = 0 # Grado de Multiprogramacion, maximo 5
 fragmentacion = []
 procesoActual = None
 
-#--------------------------------------------MENU:------------------------------------ #mejorar la salida de texto
-print("¡Bienvenido al SIMULADOR Del Equipo N° 7 de Sistemas Operativos!") #la idea es agregar: breve descripcion de lo q es el simu, Nro de grupo e integrantes
-print("""Este simulador trata sobre ...
-> Integrantes
+#--------------------------------------------MENU:------------------------------------ 
+print("¡Bienvenido al SIMULADOR Del Equipo N° 7 de Sistemas Operativos!") 
+print("""Este programa simula la gestion de asignacion de memoria (de particiones variables) y planificacion de procesos con el algoritmo SRTF.
+
+> Equipo N° 7 - Comision: k2.1 - Integrantes:
   > Alvarez Brivet, Camila
   > Arias, Alejandro Nicolas
   > Aristegui Gassmann, Valentina 
@@ -407,9 +418,9 @@ print("""Este simulador trata sobre ...
 while True:
   print("""\n------------------------------------------------------------------------
   Opciones Disponibles:
-    "0. Salir: Ingrese '0' para salir
-    "1. Informacion (recomendable)
-    "2. Comenzar Simulador
+    0. Salir: Ingrese '0' para salir
+    1. Informacion
+    2. Comenzar Simulador
 ----------------------------------------------------------------------------------""")
 
   opcion = int(input("Seleccione una opción: "))
@@ -419,7 +430,7 @@ while True:
   if opcion == 0:
     break
   elif opcion == 1:
-    volverAMenu = informacion() #en info: ampliar detalles del simu, explicar las abreviaciones, quiza explicar como cargar el archivo y que formato de procesos admite
+    volverAMenu = informacion() 
     if volverAMenu:
       continue
 
@@ -433,7 +444,8 @@ while True:
     existe = False
     if modoCarga == "1":
       while not existe:
-        archivo = input("-Cargue la ruta (o ingrese '0' para volver al menú): ").strip()
+        print("-Cargue la ruta (o ingrese '0' para volver al menú). Puede usar nuestro archivo de prueba copiando la ruta: procesos.txt")
+        archivo = input("-Cargue aquí: ").strip()
         if archivo == "0":
           break
         existe = existeArchivo(archivo)
@@ -468,7 +480,7 @@ while True:
                 GM += 1
                 llegoProcNuevo = True 
                 if proceso.TA == tActual:
-                  print(f"\n > Llegó un NUEVO proceso: {proceso.id}. (Tiempo Actual = {tActual} )")
+                  print(f"\n > Llegó un NUEVO proceso: {proceso.id} (Tiempo Actual = {tActual})")
                 else: 
                   print(f"\n > Se admitió un proceso de Cola de Nuevos: {proceso.id}. (Tiempo Actual = {tActual} )")
                 if GM >= 5:
@@ -499,7 +511,10 @@ while True:
 
           if cantProcesos == 0:
             print("\n\n               >>> Estado Final del Simulador <<<")
-          PresentacionDeSalida() 
+            
+          PresentacionDeSalida()
+
+        
       print("\n                        -----El Simulador Finalizó-----")
 
       print ("-"* 100)
@@ -515,34 +530,22 @@ while True:
 
       print(f"""\n                --- Tiempos Promedios: ---
       
->--Tiempo de Espera Promedio: {TEprom:.1f}
+> Tiempo de Espera Promedio: {TEprom:.1f}
 
->--Tiempo de Retorno Promedio:  {TRprom:.1f}""") 
+> Tiempo de Retorno Promedio:  {TRprom:.1f}""") 
 
       print(f"""\n           ---- Rendimiento del Sistema: ----
 
->-Rendimiento: {rendimientoSistema:.1f} trabajos terminados por unidad de tiempo
+> Rendimiento: {rendimientoSistema:.2f} trabajos terminados por unidad de tiempo
  (Total de Procesos Terminados respecto del Tiempo Transcurrido)
 """)
       print("""\n                               -------Fin De INFORMES-------
                             
-                                ¡Gracias por usar el Simulador!""")
+¡Gracias por usar el Simulador!""")
       print("-" * 100)
       break
 
   
-
-        
-
-
-
-        
-
-
-
-
-
-
   
 
 
