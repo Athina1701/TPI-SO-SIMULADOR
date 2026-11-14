@@ -403,7 +403,7 @@ fragmentacion = []
 procesoActual = None
 
 #--------------------------------------------MENU:------------------------------------ 
-print("¡Bienvenido al SIMULADOR Del Equipo N° 7 de Sistemas Operativos!") 
+print("¡Bienvenido al SIMULADOR Del Equipo N° 2 de Sistemas Operativos!") 
 print("""Este programa simula la gestion de asignacion de memoria (de particiones variables) y planificacion de procesos con el algoritmo SRTF.
 
 > Equipo N° 7 - Comision: k2.1 - Integrantes:
