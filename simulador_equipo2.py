@@ -369,7 +369,7 @@ Este es un Trabajo Practico de la asignatura de Sistemas Operativos.
 En este simuulador se implementa la gestion de memoria de particiones variables. Donde la memoria esta dispuesta de la siguiente manera: 
   >100K destinados al Sistema Operativo
   >450K para trabajos de usuarios.
-Se permite un maximo de 10 procesos. Se pueden cargar manualmente por teclado, o por medio de un archivo:
+SE PERMITE UN MAXIMO DE 10 PROCESOS. Se pueden cargar manualmente por teclado, o por medio de un archivo:
   > Si el archivo a ingresar no se encuentra en la misma carpeta del codigo, se deberá ingresar la ruta de acceso completa. 
   > Pudiendo ingresarse la ruta de acceso relativa si se copiase dicho archivo, dentro de la carpeta
 La planificacion de procesos es a corto plazo → Incluye 5 estados: "nuevo", "listo", "suspendido", "ejecutando" , "terminado"
@@ -440,8 +440,8 @@ while True:
     print("""\n           > COMENZANDO EL SIMULADOR...
 -Elija un formato de carga de los procesos:
   1. Cargar un archivo existente
-  2. Ingresar procesos y guardarlos en un archivo nuevo""")
-    #Solo se admiten 1o porcesos como maximo.
+  2. Ingresar procesos y guardarlos en un archivo nuevo
+> Nota: Solo se admiten 1o procesos como maximo.""")
     modoCarga = input("Seleccione una opción: ").strip()
     existe = False
     if modoCarga == "1":
