@@ -9,14 +9,12 @@ class Proceso:
     self.id = id
     self.TA = TA
     self.TI = TI
-    self.resguardoTI = TI
+    self.resguardoTI = TI # resguardoTI es para mostrar el tiempo de irrupción original del proceso en la lista de terminados. YA que self.TI se ira descontando hasta llegar a 0.
     self.tamano = tamano
     self.estado = estado
-    self.TR = 0. # TR = T_fin – TA
+    self.TR = 0. # TR = T_fin del proceso – TA
     self.TE = 0. # TE = TR – TI, donde TI es la duración de la ráfaga de CPU requerida).
-#HACER: al tomar los procesos del archivo, debo validar los tiposde datos. tamaño debe ser numerico, en el archivo me lo entrega como string, o al menoS eso entiendo, lo tengo que pasar
 
-#
 nuevos = []
 listos = []
 listosSuspendidos = []
@@ -30,15 +28,16 @@ def existeArchivo(nombreArchivo):
     with open(nombreArchivo, 'r') as archi:
       primerLinea = archi.readline()
       if primerLinea == "":
-        print("-El archivo esta vacio.")
+        print("-El archivo esta vacio. INgrese nuevamente:")
         return False
       return True
   except FileNotFoundError:
-    print("-El archivo no fue encontrado.")
+    print("-El archivo no fue encontrado. Ingrese nuevamente:")
     return False
   except OSError as error:
     print(f"-No se pudo abrir el archivo: {error}")
     return False
+  
 #para ingresar los procesos por pantalla
 def crearArchivoProcesos():
   print("Se ingresa un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
@@ -94,6 +93,7 @@ def cargarNuevos(nombreArchivo, colaNuevos):
             print(f"\n>> Este proceso: {linea!r}, supera el tamaño de la memoria. Será descartado!")
             continue
           #------------------------------------
+
           procesoNuevo = Proceso(linea[0], ta, ti , tamano, "nuevo")
           colaNuevos.append(procesoNuevo) 
           cantProcesos += 1  
@@ -194,6 +194,7 @@ def PresentacionDeSalida(): #muestro todas las colas
 #--------------------------MEMORIA-------------------------------------
 # La memoria se maneja como una lista de diccionarios:
 memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ]
+#Cada diccionario es una particion
 contadorIDparticion = 2
 disponibleEnMemoria = 450
 #----------------------manejo de memoria-----------------------
@@ -440,6 +441,7 @@ while True:
 -Elija un formato de carga de los procesos:
   1. Cargar un archivo existente
   2. Ingresar procesos y guardarlos en un archivo nuevo""")
+    #Solo se admiten 1o porcesos como maximo.
     modoCarga = input("Seleccione una opción: ").strip()
     existe = False
     if modoCarga == "1":
@@ -482,7 +484,7 @@ while True:
                 if proceso.TA == tActual:
                   print(f"\n > Llegó un NUEVO proceso: {proceso.id} (Tiempo Actual = {tActual})")
                 else: 
-                  print(f"\n > Se admitió un proceso de Cola de Nuevos: {proceso.id}. (Tiempo Actual = {tActual} )")
+                  print(f"\n > Se admitió un proceso de Cola de Nuevos: {proceso.id}. (Tiempo Actual = {tActual})")
                 if GM >= 5:
                   break
 
