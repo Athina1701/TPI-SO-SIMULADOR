@@ -40,8 +40,8 @@ def existeArchivo(nombreArchivo):
   
 #para ingresar los procesos por pantalla
 def crearArchivoProcesos():
-  print("Se ingresa un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
-  print("Presione Enter en una línea vacía para terminar.")
+  print("\n--Ha selecionado la Opcion 2: Ingresar procesos por teclado --\n Se ingresa un proceso por línea: id, TA, TI, tamaño. Separado por espacios")
+  print("(Puede copiar varios procesos y pegar)\nPresione Enter en una línea vacía para terminar.")
   while True:
     nombreArchivo = input("-Primero ingrese el nombre del archivo nuevo, en el formato [procesosIngresados.txt]: ").strip()
     if not nombreArchivo:
@@ -52,19 +52,19 @@ def crearArchivoProcesos():
       archi = open(nombreArchivo, "x", encoding="utf-8")
       break
     except FileExistsError:
-      print("Ese archivo ya existe. Elija otro nombre para no sobrescribirlo.")
+      print(">> Ese archivo ya existe. Elija otro nombre para no sobrescribirlo.")
     except OSError as error:
-      print(f"No se pudo crear el archivo: {error}")
+      print(f">> No se pudo crear el archivo: {error}")
       return None
 
   with archi:
     while True:
-      linea = input("Proceso (Enter para terminar): ").strip()
+      linea = input("-Proceso (Enter para terminar): ").strip()
       if not linea:
         break
       archi.write(linea + "\n")
 
-  print(f"Procesos guardados en: {nombreArchivo}")
+  print(f"Procesos guardados en: {nombreArchivo} \n")
   return nombreArchivo
 
 def cargarNuevos(nombreArchivo, colaNuevos):
@@ -117,11 +117,6 @@ def EliminarDeCola(cola, proceso): #recibe la cola y el proceso a eliminar.
     indice += 1
   if seEncontroProc:
     del cola[resguardoIndice]
-
-def ControldeProcesos():
-
-  pass
-
 
 texto = "es para indicar el titulo. Ejemplo: 'Cola de nuevos', 'Cola de listos', etc."
 def MostrarCola(cola, texto):
@@ -187,7 +182,7 @@ def PresentacionDeSalida(): #muestro todas las colas
     print(f"| {pEjecutandose.id :^20} | {pEjecutandose.TI :^19} |\n")
   else: 
     print(f"| {'Ninguno':^20} | {'0':^19} |\n")
-    print("\n>(Actualmente no hay procesos ejecutandose)--\n")
+    print(">(Actualmente no hay procesos ejecutandose)\n")
   print("-" * 100 , "\n")
 
 
@@ -229,7 +224,7 @@ def MostrarFragmentacion(fFragmentacion):
   for part in fFragmentacion:
     print(f"   -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
-  print("-Fragmentacion Externa total en la memoria: ", fragTotal, ", en el Tiempo = ", tActual, "\n")
+  print("-Fragmentacion Externa total en la memoria: ", fragTotal, "\n")
 
 def JuntarParticiones(fmemoria):
   #ACLARACION: esta funcion NO COMPACTA espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
@@ -402,6 +397,7 @@ tActual = 0
 GM = 0 # Grado de Multiprogramacion, maximo 5
 fragmentacion = []
 procesoActual = None
+procFinalizado = False
 
 #--------------------------------------------MENU:------------------------------------ 
 print("¡Bienvenido al SIMULADOR Del Equipo N° 2 de Sistemas Operativos!") 
@@ -499,22 +495,23 @@ while True:
         AumentarTiempo(listos, listosSuspendidos)
 #--------------------Una vez aumentado el tiempo: Control de ejecucion:-------------------------------------------------
         #finalizó la ejecucion del proceso?
-        procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria) 
-        if procFinalizado:
-          if listos:
-            procesoActual= listos[0] #Siguiente proceso a ejecutar
-            if procesoActual.TA <= tActual:
-              EjecutarProceso(procesoActual, ejecucion, listos)
+        if ejecucion["enUso"] == True:
+          procFinalizado, memoria, disponibleEnMemoria = DisminuirTI(ejecucion, memoria, disponibleEnMemoria) 
+          if procFinalizado:
+            if listos:
+              procesoActual= listos[0] #Siguiente proceso a ejecutar
+              if procesoActual.TA <= tActual:
+                EjecutarProceso(procesoActual, ejecucion, listos)
 
-  #-----------------------Termina control de ejecucion---------------
+    #-----------------------Termina control de ejecucion---------------
 
-          for p in list(listosSuspendidos): #hay un proceso suspendido en espera de ser cargado.
-            fragmentacion = CargarListos(p, listos, listosSuspendidos)
+            for p in list(listosSuspendidos): #hay un proceso suspendido en espera de ser cargado.
+              fragmentacion = CargarListos(p, listos, listosSuspendidos)
 
-          if cantProcesos == 0:
-            print("\n\n               >>> Estado Final del Simulador <<<")
-            
-          PresentacionDeSalida()
+            if cantProcesos == 0:
+              print("\n\n               >>> Estado Final del Simulador <<<")
+              
+            PresentacionDeSalida()
 
         
       print("\n                        -----El Simulador Finalizó-----")
