@@ -236,7 +236,7 @@ Procesos guardados en: lote3.txt
 | Par_6        |   440    |    10     |      Libre       |
 > Hubo FRAGMENTACIÓN en las particiones: 
    -Particion: 6 ; Tamaño: 10
--Fragmentacion Externa total en la memoria:  10 
+-Fragmentacion Externa total en la memoria:  10  #esto aca esta mal.
 
 
 -----Cola de Procesos NUEVOS-----

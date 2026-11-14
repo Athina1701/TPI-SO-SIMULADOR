@@ -252,13 +252,13 @@ def JuntarParticiones(fmemoria):
 
 def LiberarMemoria(fproceso, memoria):
   global disponibleEnMemoria, fragmentacion
+  fragmentacion = [] #reinicio las fragmentaciones que pudieron haber ocurrido.
   for particion in memoria: #Busco particion donde esta el proceso a quitar.
     if str(particion.get("procesoAsignado")) == str(fproceso.id) :
       particion["procesoAsignado"] = None #cambio estado de la particion a LIBRE
       disponibleEnMemoria += fproceso.tamano
       memoria = JuntarParticiones(memoria)
       return True, memoria
-    fragmentacion = [] #reinicio las fragmentaciones que pudieron haber ocurrido.
   return False, memoria
 
 #------------------------------------fin MEMORIA---------------------------------------
