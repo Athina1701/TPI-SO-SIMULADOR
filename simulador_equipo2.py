@@ -296,7 +296,8 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos):
     
     if procActual.TI < procesoEjecutandose.TI: #Expropio
       AgregarAListos(procesoEjecutandose, colaListos) #Ya esta asignado a memoria, no hace falta pregunta por espacio dispo.
-      print(f"> Se expropió el proceso {procesoEjecutandose.id}, por el proceso: {procActual.id}, TI: {procActual.TI} (tiempo = {tActual}). \n")
+
+      # BORRAR: print(f"> Se expropió el proceso {procesoEjecutandose.id}, por el proceso: {procActual.id}, TI: {procActual.TI} (tiempo = {tActual}). \n")
     else: #print("\n> Un proceso intentó ejecutarse: La CPU está ocupada por un proceso con menor TI")
       return
   else:
@@ -431,7 +432,7 @@ while True:
     if volverAMenu:
       continue
 
-#-------------------------------------------------------------------------------------------------------------
+  #-------------------------------------------------------------------------------------------------------------
   elif opcion == 2:
     print("""\n           > COMENZANDO EL SIMULADOR...
 -Elija un formato de carga de los procesos:
