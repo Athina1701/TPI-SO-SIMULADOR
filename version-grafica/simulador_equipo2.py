@@ -1,22 +1,21 @@
 # Simulador de Sistemas Operativos: motor y presentación por consola.
 from operator import attrgetter, itemgetter
-from copy import deepcopy
+from copy import deepcopy 
 from contextlib import redirect_stdout
 from io import StringIO
 
 class Proceso:
-  """Representa una ráfaga: TI disminuye y resguardoTI conserva su valor original."""
   def __init__(self, id, TA, TI, tamano, estado):
     self.id = id
     self.TA = TA
-    self.TI = TI
-    self.resguardoTI = TI
+    self.TI = TI  #Representa una ráfaga: TI disminuye y resguardoTI conserva su valor original.
+    self.resguardoTI = TI  
     self.tamano = tamano
     self.estado = estado
     self.TR = 0.
     self.TE = 0.
 
-# Colas y CPU compartidas por las funciones del motor.
+# Colas y CPU compartidas por las funciones del simulador.
 nuevos = []
 listos = []
 listosSuspendidos = []
@@ -26,7 +25,7 @@ ejecucion = { "enUso": False, "procEjecutandose": None }
 
 
 def _leerTextoProcesos(nombreArchivo):
-  """Lee UTF-8 con BOM opcional; admite Windows-1252 para archivos anteriores."""
+  # Lee UTF-8 con BOM opcional; admite Windows-1252 para archivos anteriores.
   try:
     with open(nombreArchivo, "r", encoding="utf-8-sig") as archivo:
       return archivo.read()
@@ -36,20 +35,22 @@ def _leerTextoProcesos(nombreArchivo):
 
 
 def existeArchivo(nombreArchivo):
+  # Comprueba la existencia del archivo .txt que contiene los procesos.
   try:
     if not _leerTextoProcesos(nombreArchivo):
-      print("El archivo está vacío. Ingrese otra ruta:")
+      print("\nEl archivo está vacío. Ingrese otra ruta:")
       return False
     return True
   except FileNotFoundError:
-    print("No se encontró el archivo. Ingrese otra ruta:")
+    print("\nNo se encontró el archivo. Ingrese otra ruta:")
     return False
   except (OSError, UnicodeError):
-    print("No se pudo leer el archivo. Compruebe la ruta, los permisos y la codificación.")
+    print("\nNo se pudo leer el archivo. Compruebe la ruta, los permisos y la codificación.")
     return False
 
 
 def crearArchivoProcesos():
+  #Funcion para ingresar por teclado los procesos.
   print("\nIngreso de procesos por teclado\nIngrese ID, TA, TI y tamaño, separados por espacios.")
   print("(Puede copiar varios procesos y pegar)\nPresione Enter en una línea vacía para terminar.")
   while True:
@@ -82,7 +83,7 @@ def crearArchivoProcesos():
   return nombreArchivo
 
 def validarRegistro(campos, identificadores=()):
-  """Valida ID, TA, TI y tamaño; devuelve datos normalizados y todos los motivos."""
+  #Valida los campos de cada proceso: ID, TA, TI y tamaño; devuelve datos normalizados y todos los motivos.
   if len(campos) != 4:
     return None, ["se requieren exactamente cuatro campos: ID TA TI tamaño."]
   identificador = campos[0].strip() if isinstance(campos[0], str) else ""
@@ -118,7 +119,7 @@ def validarRegistro(campos, identificadores=()):
 
 
 def formatearInformeCarga(carga):
-  """Presentación común de diagnósticos; los conteos corresponden a registros."""
+  #Presentación de diagnósticos: procesos aceptados, rechazados; cada línea cuenta como un registro, aunque tenga varios errores. 
   resumen = carga["resumen"]
   lineas = ["Formato: ID TA TI tamaño (KB).",
             f"Procesos cargados: {resumen['aceptados']}. Registros rechazados: {resumen['rechazados']}. "
@@ -139,7 +140,8 @@ def formatearInformeCarga(carga):
 
 
 def cargarNuevos(nombreArchivo, colaNuevos):
-  """Carga por consola con la misma validación utilizada por la interfaz gráfica."""
+  # Una vez procesado el archivo, carga los procesos a la cola de nuevos.
+  # Carga por consola con la misma validación utilizada por la interfaz gráfica.
   global cantProcesos
   try:
     carga = cargarProcesosArchivo(nombreArchivo, limite=max(0, 10 - cantProcesos),
@@ -332,7 +334,7 @@ def CargarListosYSuspendidos(fProceso, colaActual):
   _registrarCambioEstado(fProceso, estadoAnterior)
 
 def AgregarAListos(fProceso, colaListos):
-  """Inserta por TI creciente y conserva el orden en caso de empate."""
+  #Inserta el proceso a cargar por TI creciente y conserva el orden en caso de empate.
   estadoAnterior = fProceso.estado
   fProceso.estado = "listo"
   mayorTI = True
@@ -359,7 +361,7 @@ def CargarListos(fProceso, colaListos, colaActual):
   return fFragmentacion
 
 def EjecutarProceso(procActual, colaEjecucion, colaListos):
-  """Selecciona la CPU o expropia ante un TI estrictamente menor; conserva la memoria asignada."""
+  #Asigna un proceso a la CPU o expropia ante un TI estrictamente menor; conserva la memoria asignada.
   if colaEjecucion["enUso"] == True:
     procesoEjecutandose = colaEjecucion["procEjecutandose"]
 
@@ -368,7 +370,6 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos):
                        reemplazante=procActual.id,
                        TI=procesoEjecutandose.TI, TIReemplazante=procActual.TI)
       AgregarAListos(procesoEjecutandose, colaListos)
-
 
     else:
       return
@@ -382,6 +383,7 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos):
   _registrarEvento("seleccion_cpu", proceso=procActual.id, TI=procActual.TI)
 
 def TerminarProceso(proceso, fMemoria):
+  #Al finalizar de ejecutarse (TI = 0), se cambia el estado del proceso a terminado, se lo agrega a la lista de terminados y se libera el espacio de memoria que utiliza.
   global cantProcesos, GM
   liberadoCorrectamente, fMemoria = LiberarMemoria(proceso, fMemoria)
   if liberadoCorrectamente:
@@ -396,10 +398,11 @@ def TerminarProceso(proceso, fMemoria):
     _registrarCambioEstado(proceso, estadoAnterior)
     _registrarEvento("finalizacion", proceso=proceso.id, TE=proceso.TE, TR=proceso.TR)
   else:
-      print("Hubo un error al finalizar el proceso.")
+      print("> Hubo un error al finalizar el proceso.")
   return fMemoria, disponibleEnMemoria
 
 def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
+  #Luego de haber incrementado el tiempo actual, disminuyo el TI del proceso ejecutandose
   fProceso  = colaEjecucion["procEjecutandose"]
   fProceso.TI -=1
   _registrarEvento("ejecucion_cpu", proceso=fProceso.id, inicio=tActual - 1,
@@ -412,8 +415,7 @@ def DisminuirTI(colaEjecucion, fMemoria, disponibleEnMemoria ):
 
 
 def CalcularPromediosTEyTR():
-  """Promedia los valores de los procesos terminados; requiere al menos uno."""
-
+  #Promedia los tiempos TE y TR de los procesos terminados; requiere al menos uno.
   totalProcesos = len(terminados)
   TEpromedio = 0
   TRpromedio = 0
@@ -426,14 +428,14 @@ def CalcularPromediosTEyTR():
   return TEpromedio, TRpromedio
 
 def CalcularRendimientoSistema (colaTerminados, tActual):
-  """Divide procesos terminados por tiempo total, incluida la inactividad."""
+  #Divide la cantidad de procesos terminados por tiempo total, incluida la inactividad.
   totalProcTerm= len(colaTerminados)
   rendimiento = totalProcTerm / (tActual)
   return rendimiento
 
 
 def AumentarTiempo(colaListos, colaSuspendidos):
-  """Avanza el reloj y acumula TE solo para listos y suspendidos, sin incluir nuevos."""
+  #Avanza el reloj y acumula TE solo para listos y suspendidos, sin incluir nuevos.
   global tActual
   tActual +=1
 
@@ -443,7 +445,7 @@ def AumentarTiempo(colaListos, colaSuspendidos):
     proc.TE += 1
 
 def informacion():
-  print("""Información del simulador de Sistemas Operativos
+  print("""   ---Información del simulador de Sistemas Operativos---
 
 Memoria: 100 KB reservados al sistema operativo y 450 KB para procesos.
 Se utilizan particiones variables con asignación Best Fit y fusión de entradas
@@ -456,13 +458,16 @@ Las rutas pueden ser absolutas o relativas a la carpeta de ejecución.
 Archivo de ejemplo: procesos.txt.
 
 Estados: nuevo, listo, suspendido, en ejecución y terminado.
-TA: tiempo de arribo. TI: tiempo de CPU original o restante según la vista.
-TR: tiempo de finalización menos TA.
+TA: tiempo de arribo. 
+TI: tiempo de CPU original o restante según la vista.
+TR: tiempo de finalización - TA.
 TE: espera acumulada en listos y suspendidos; no incluye permanencia en nuevos.
-GM: procesos en listos, suspendidos y ejecución; máximo de cinco.
+GM: grado de multiprogramación; procesos en listos, suspendidos y ejecución; máximo de 5.
 
 Al finalizar se informan TE, TR y rendimiento por unidad de tiempo simulado.
-Consola: python simulador_equipo2.py. Interfaz gráfica: python main_gui.py.
+Para ejecutar por: 
+  Consola: python simulador_equipo2.py. 
+  Interfaz gráfica: python main_gui.py.
 """)
   salir = input("Presione Enter para volver al menú: ")
   if salir == "":
@@ -513,12 +518,12 @@ def _registrarCambioEstado(proceso, estadoAnterior):
 
 
 def obtenerEventos():
-  """Devuelve copias de los eventos de la última iteración, sin consumirlos."""
+  #Devuelve copias de los eventos de la última iteración, sin consumirlos.
   return deepcopy(_eventosIteracion)
 
 
 def reiniciarSimulacion():
-  """Restablece reloj, CPU, colas, memoria, contadores y eventos."""
+  #Restablece reloj, CPU, colas, memoria, contadores y eventos.
   global cantProcesos, tActual, GM, contadorIDparticion, disponibleEnMemoria
   global procesoActual, procFinalizado, _secuenciaEvento, _registrandoEventos
   nuevos.clear()
@@ -543,12 +548,12 @@ def reiniciarSimulacion():
 
 
 def cargarProcesosArchivo(nombreArchivo, limite=10, identificadores=()):
-  """Valida sin modificar el motor. Tras el límite solo cuenta registros sin procesar."""
+  # Valida los procesos del archivo .txt. Pasado el límite, las lineas restantes se anotan como "no procesadas".
   limite = max(0, min(10, limite))
   aceptados = []
   errores = []
   noProcesados = []
-  ids = set(identificadores)
+  ids = set(identificadores) # Guarda los IDs existentes y los aceptados para detectar duplicados.
   with StringIO(_leerTextoProcesos(nombreArchivo)) as archivo:
     for numero, linea in enumerate(archivo, 1):
       linea = linea.strip()
@@ -578,12 +583,12 @@ def cargarProcesosArchivo(nombreArchivo, limite=10, identificadores=()):
 
 
 def iniciarSimulacion(procesos):
-  """Inicializa una simulación nueva con los datos devueltos por el cargador."""
+  # Valida la lista de procesos y ordena hasta diez procesos, inicia la simulación y devuelve su estado inicial.
   global cantProcesos
   if len(procesos) > 10:
     raise ValueError("Solo se pueden iniciar hasta diez procesos válidos.")
   procesosNuevos = []
-  ids = set()
+  ids = set() # para llevar registro de los identificadores aceptados.
   for indice, proceso in enumerate(procesos, 1):
     if not isinstance(proceso, dict):
       raise ValueError(f"Proceso {indice}: se requieren ID, TA, TI y tamaño.")
@@ -601,7 +606,7 @@ def iniciarSimulacion(procesos):
 
 
 def obtenerEstado():
-  """Devuelve una instantánea independiente del estado y del orden de las colas."""
+  #Devuelve una instantánea independiente del estado y del orden de las colas.
   def copiarProceso(proceso):
     if proceso is None:
       return None
@@ -637,7 +642,8 @@ def obtenerEstado():
 
 
 def ejecutarIteracion(mostrarConsola=True):
-  """Avanza una unidad de tiempo; conserva el orden de operaciones y el cálculo actual de TE."""
+  # Bucle Principal: Una vez cargado en nuevos, carga en Listos los procesos correspondientes, toma el primer proceso en listos y ejecuta, segun corresponda.
+  # Avanza una unidad de tiempo; conserva el orden de operaciones y el cálculo actual de TE.
   global GM, fragmentacion, procesoActual, procFinalizado, memoria, disponibleEnMemoria
   global _registrandoEventos
   if not mostrarConsola:
@@ -700,11 +706,11 @@ def ejecutarIteracion(mostrarConsola=True):
 
 
 def ejecutarConsola():
-  """Ejecuta el menú tradicional y los informes sin cambiar las reglas del motor."""
+  # Ejecuta el FLUJO PRINCIPAL por CONSOLA: el menú tradicional, carga de procesos, simulacion y los informes. 
   print("Bienvenido al simulador de Sistemas Operativos.")
   print("""Este programa simula la gestion de asignacion de memoria (de particiones variables) y planificacion de procesos con el algoritmo SRTF.
 
-> Comisión: K2.1 - Integrantes:
+> Grupo Nro 2 - Comisión: K2.1 - Integrantes:
   > Alvarez Brivet, Camila
   > Arias, Alejandro Nicolas
   > Aristegui Gassmann, Valentina
