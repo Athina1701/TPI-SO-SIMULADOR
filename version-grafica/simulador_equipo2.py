@@ -14,6 +14,9 @@ class Proceso:
     self.estado = estado
     self.TR = 0.
     self.TE = 0.
+    """ NOTA: El TR se calcula restando el tiempo de arribo original del proceso y exactamente el tiempo en que termina; 
+  Es decir, que tambien incluye el tiempo que pasa esperando ANTES de ingresar a LISTOS (o listos y suspendidos) por el limite impuesto del GM = 5, el cual no deja que ingrese un proceso por mas que ya haya arribado. 
+  En cambio, el TE, se calcula tomando en cuenta solo el tiempo que pasa esperando en la cola listos y la de suspendidos. Tal como dice en la teoria de la catedra."""
 
 # Colas y CPU compartidas por las funciones del simulador.
 nuevos = []
@@ -225,7 +228,7 @@ def PresentacionDeSalida():
         print(f"| {p.id:<5} | {p.TA:>4} | {p.resguardoTI:>4} | {p.tamano:>10} | {p.estado:<10} |")
 
 
-  print("\n-----Estado del PROCESADOR Actualmente-----\n")
+  print("\n-----Estado de la CPU Actualmente-----\n")
   print(f"| {'Proceso en ejecución':^20} | {'Tiempo de Irrupción':^19} | ")
   print("-" * 46)
   if ejecucion["enUso"] == True:
@@ -277,11 +280,11 @@ def CargarEnMemoria(fproceso):
 
 def MostrarFragmentacion(fFragmentacion):
   fragTotal = 0
-  print("> Huecos libres insuficientes en el intento de asignación: ")
+  print("> ¡Fragmentacion!: Huecos libres insuficientes en el intento de asignación: ")
   for part in fFragmentacion:
     print(f"   -Particion: {part["id"]} ; Tamaño: {part["tamanio"]}")
     fragTotal += part["tamanio"]
-  print("-Tamaño total de esos huecos (KB): ", fragTotal, "\n")
+  print("-Fragmentación Externa Total (KB): ", fragTotal, "\n")
 
 def JuntarParticiones(fmemoria):
   """Fusiona entradas libres consecutivas de la memoria ordenada; no desplaza procesos."""
@@ -383,7 +386,7 @@ def EjecutarProceso(procActual, colaEjecucion, colaListos):
   _registrarEvento("seleccion_cpu", proceso=procActual.id, TI=procActual.TI)
 
 def TerminarProceso(proceso, fMemoria):
-  #Al finalizar de ejecutarse (TI = 0), se cambia el estado del proceso a terminado, se lo agrega a la lista de terminados y se libera el espacio de memoria que utiliza.
+  #Al finalizar de ejecutarse (TI = 0), se cambia el estado del proceso a terminado, se lo agrega a la lista de terminados, se libera el espacio de memoria que utiliza y se calcual su TR.
   global cantProcesos, GM
   liberadoCorrectamente, fMemoria = LiberarMemoria(proceso, fMemoria)
   if liberadoCorrectamente:
@@ -391,7 +394,7 @@ def TerminarProceso(proceso, fMemoria):
     GM -= 1
     estadoAnterior = proceso.estado
     proceso.estado = "terminado"
-    proceso.TR = tActual - proceso.TA
+    proceso.TR = tActual - proceso.TA 
     terminados.append(proceso)
     ejecucion["enUso"] = False
     ejecucion["procEjecutandose"] = None
