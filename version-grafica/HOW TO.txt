@@ -2,6 +2,11 @@
 ----------- Pasos para ejecutar el simulador: -----------
 
 
+#Archivos principales:
+    version-grafica\main_gui.py
+    version-grafica\simulador_equipo2.py
+
+
 # EJECUTANDO SOBRE LA CONSOLA TRADICIONAL:
 
 -Abra/seleccione el archivo: simulador_equipo2.py que se encuentra en la carpeta "version-grafica"
