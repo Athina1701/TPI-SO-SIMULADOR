@@ -8,7 +8,7 @@ class Proceso:
   def __init__(self, id, TA, TI, tamano, estado):
     self.id = id
     self.TA = TA
-    self.TI = TI  #Representa una ráfaga: TI disminuye y resguardoTI conserva su valor original.
+    self.TI = TI  #TI: representa una ráfaga: TI disminuye y resguardoTI conserva su valor original.
     self.resguardoTI = TI  
     self.tamano = tamano
     self.estado = estado
@@ -181,7 +181,8 @@ def MostrarCola(cola, texto):
 
 
 def MostrarMemoria(fMemoria, fragmentacion):
-  """Muestra y ordena la memoria original por dirección. Este efecto puede influir en empates de Best Fit y se conserva también en modo silencioso."""
+  # Muestra y ordena la memoria original por dirección de inicio de la particion. Si hay empate de Best Fit, se considera el primero que aparece, el orden original.
+  # Además, muestra si hubo fragmentacion
   print(f"| {'ID_Particion':<12} | {'Comienzo':^4} | {'Tamaño KB':^8} | {'Proceso Asignado':^16} |")
   print("-" * 60)
   print(f"| {'Par_0':<12} | {'450':^8} | {'100':^9} | {' SIST. OPERATIVO':^16} |")
@@ -198,6 +199,7 @@ def MostrarMemoria(fMemoria, fragmentacion):
 
 
 def PresentacionDeSalida():
+  #Muestra el estado actual de todas las colas, CPU y Memoria. Se llama a la funcion cada vez que termina un proceso y cuando llega un nuevo proceso.
   print("\n\n             -------- TIEMPO ACTUAL: ", tActual, " ---------\n")
   print(" >Cantidad de Procesos Faltantes a terminar: ", cantProcesos)
   print(" >Grado De Multiprogramación: ", GM, "\n")
@@ -226,6 +228,7 @@ def PresentacionDeSalida():
     print("-" * 49)
     for p in terminados:
         print(f"| {p.id:<5} | {p.TA:>4} | {p.resguardoTI:>4} | {p.tamano:>10} | {p.estado:<10} |")
+        #se utiliza .resguardoTI para mostrar el TI original del proceso
 
 
   print("\n-----Estado de la CPU Actualmente-----\n")
@@ -239,14 +242,15 @@ def PresentacionDeSalida():
     print(">(Actualmente no hay procesos ejecutándose)\n")
   print("-" * 100 , "\n")
 
-
+#--------------------------------------------Manejo de la MEMORIA------------------------------------
 memoria = [ { "id": 1, "comienzo": 0, "tamanio": 450, "procesoAsignado": None } , ]
-
-contadorIDparticion = 2
+contadorIDparticion = 2 #utilizado para no repetir los IDs de las particiones
 disponibleEnMemoria = 450
 
 def CargarEnMemoria(fproceso):
-  """Aplica Best Fit con orden estable por tamaño y divide el espacio sobrante en un hueco libre."""
+  #Aplica Best Fit, ordenando las particiones de la memoria de menos a mayor tamaño. Asignando el proceso a la primera particion con tamaño adecuado; divide el espacio sobrante en un hueco libre.
+  # En caso de que encuentre un espacio libre pero con tamaño insuficiente; se copia la particion a la lista de Fragmentacion, para posteriormente mostrar que hubo Fragmentacion.
+
   global disponibleEnMemoria, contadorIDparticion
   fFragmentacion= []
   longitudMemoria = len(memoria)
@@ -287,8 +291,10 @@ def MostrarFragmentacion(fFragmentacion):
   print("-Fragmentación Externa Total (KB): ", fragTotal, "\n")
 
 def JuntarParticiones(fmemoria):
-  """Fusiona entradas libres consecutivas de la memoria ordenada; no desplaza procesos."""
+  #Fusiona entradas libres consecutivas de la memoria ordenada; no desplaza procesos.
 
+  #ACLARACION: esta funcion NO COMPACTA espacios libres. Esta por una cuestion tecnica de como se maneja la memoria en nuestro codigo: 
+  #Por cada proceso que se guarda en memoria se crea un nuevo diccionario, cuando el proceso se desasigna, el diccionario queda LIBRE, y se junta SOLO si el siguiente diccionario LIBRE es sucesivo en memoria al anterior (o sea: PART 1: Comienzo: 50, tamaño:50 → Si PART 2: comienzo: 100, y esta libre; se unen.) Asi un proceso mas grande, que la particion antes de juntarse, puede usar el espacio disponible """
 
   memoriaCopy = []
   longitudMemoria = len(fmemoria)
@@ -327,8 +333,10 @@ def LiberarMemoria(fproceso, memoria):
       return True, memoria
   return False, memoria
 
+#-----------------------------------------Fin MEMORIA-----------------------------------------------------
 
 def CargarListosYSuspendidos(fProceso, colaActual):
+  #inserta el proceso en la cola de suspendidos, actualizando su estado.
   estadoAnterior = fProceso.estado
   fProceso.estado = "suspendido"
   listosSuspendidos.append(fProceso)
@@ -337,7 +345,7 @@ def CargarListosYSuspendidos(fProceso, colaActual):
   _registrarCambioEstado(fProceso, estadoAnterior)
 
 def AgregarAListos(fProceso, colaListos):
-  #Inserta el proceso a cargar por TI creciente y conserva el orden en caso de empate.
+  #Inserta el proceso a cargar por TI creciente en la cola listos y conserva el orden en caso de empate.
   estadoAnterior = fProceso.estado
   fProceso.estado = "listo"
   mayorTI = True
@@ -354,12 +362,13 @@ def AgregarAListos(fProceso, colaListos):
   _registrarCambioEstado(fProceso, estadoAnterior)
 
 def CargarListos(fProceso, colaListos, colaActual):
+  #Se intenta ingresar un proceso a memoria y cargarlo a la cola Listos; en caso de no haber suficiente espacio se lo agrega a la cola de suspendidos
   hayEspacio, fFragmentacion = CargarEnMemoria(fProceso)
   if hayEspacio:
     AgregarAListos(fProceso, colaListos)
     EliminarDeCola(colaActual, fProceso)
-
-  elif (fProceso.estado != "suspendido"):
+  #No hay espacio: 
+  elif (fProceso.estado != "suspendido"): #Carga en suspendidos, solo si es que NO estaba en suspendidos.
     CargarListosYSuspendidos(fProceso, colaActual)
   return fFragmentacion
 
@@ -492,7 +501,7 @@ _secuenciaEvento = 0
 _registrandoEventos = False
 _procesosArribados = set()
 
-
+#-------------funciones utilizadas para la interfaz grafica. No afectan el funcionamiento del simulador. ---------------------------------
 def _registrarEvento(tipo, **datos):
   global _secuenciaEvento
   if not _registrandoEventos:
@@ -550,6 +559,44 @@ def reiniciarSimulacion():
   _registrandoEventos = False
 
 
+
+def obtenerEstado():
+  #Devuelve una instantánea independiente del estado y del orden de las colas.
+  def copiarProceso(proceso):
+    if proceso is None:
+      return None
+    return {
+      "id": proceso.id,
+      "TA": proceso.TA,
+      "TI": proceso.TI,
+      "resguardoTI": proceso.resguardoTI,
+      "tamano": proceso.tamano,
+      "estado": proceso.estado,
+      "TR": proceso.TR,
+      "TE": proceso.TE,
+    }
+
+  return {
+    "tActual": tActual,
+    "cantProcesos": cantProcesos,
+    "GM": GM,
+    "disponibleEnMemoria": disponibleEnMemoria,
+    "ejecucion": {
+      "enUso": ejecucion["enUso"],
+      "procEjecutandose": copiarProceso(ejecucion["procEjecutandose"]),
+    },
+    "colas": {
+      "nuevos": [copiarProceso(p) for p in nuevos],
+      "listos": [copiarProceso(p) for p in listos],
+      "listosSuspendidos": [copiarProceso(p) for p in listosSuspendidos],
+      "terminados": [copiarProceso(p) for p in terminados],
+    },
+    "memoria": [particion.copy() for particion in memoria],
+    "fragmentacion": [particion.copy() for particion in fragmentacion],
+  }
+
+#------------------------Funciones para el flujo principal del Simulador-------------------------------------------------------------
+
 def cargarProcesosArchivo(nombreArchivo, limite=10, identificadores=()):
   # Valida los procesos del archivo .txt. Pasado el límite, las lineas restantes se anotan como "no procesadas".
   limite = max(0, min(10, limite))
@@ -606,42 +653,6 @@ def iniciarSimulacion(procesos):
   nuevos.extend(procesosNuevos)
   cantProcesos = len(nuevos)
   return obtenerEstado()
-
-
-def obtenerEstado():
-  #Devuelve una instantánea independiente del estado y del orden de las colas.
-  def copiarProceso(proceso):
-    if proceso is None:
-      return None
-    return {
-      "id": proceso.id,
-      "TA": proceso.TA,
-      "TI": proceso.TI,
-      "resguardoTI": proceso.resguardoTI,
-      "tamano": proceso.tamano,
-      "estado": proceso.estado,
-      "TR": proceso.TR,
-      "TE": proceso.TE,
-    }
-
-  return {
-    "tActual": tActual,
-    "cantProcesos": cantProcesos,
-    "GM": GM,
-    "disponibleEnMemoria": disponibleEnMemoria,
-    "ejecucion": {
-      "enUso": ejecucion["enUso"],
-      "procEjecutandose": copiarProceso(ejecucion["procEjecutandose"]),
-    },
-    "colas": {
-      "nuevos": [copiarProceso(p) for p in nuevos],
-      "listos": [copiarProceso(p) for p in listos],
-      "listosSuspendidos": [copiarProceso(p) for p in listosSuspendidos],
-      "terminados": [copiarProceso(p) for p in terminados],
-    },
-    "memoria": [particion.copy() for particion in memoria],
-    "fragmentacion": [particion.copy() for particion in fragmentacion],
-  }
 
 
 def ejecutarIteracion(mostrarConsola=True):
@@ -708,8 +719,10 @@ def ejecutarIteracion(mostrarConsola=True):
     _registrandoEventos = False
 
 
+#---------------------------------------------------------------------------------------------------------------
+
 def ejecutarConsola():
-  # Ejecuta el FLUJO PRINCIPAL por CONSOLA: el menú tradicional, carga de procesos, simulacion y los informes. 
+  # Ejecuta el FLUJO PRINCIPAL por CONSOLA: el menú tradicional, carga de procesos, simulacion y calcula los informes al finalizar. 
   print("     \n¡Bienvenido al simulador de Sistemas Operativos!")
   print("""Este programa simula la gestion de asignacion de memoria (de particiones variables) y planificacion de procesos con el algoritmo SRTF.
 

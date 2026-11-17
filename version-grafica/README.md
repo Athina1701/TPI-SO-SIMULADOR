@@ -4,6 +4,11 @@ Trabajo práctico universitario en Python. Simula planificación de CPU **SRTF**
 y administración de memoria **Best Fit**, con particiones variables. Incluye un
 dashboard oscuro con CustomTkinter y el menú tradicional por consola.
 
+## Archivos principales:
+  simulador_equipo2.py   Para ejecutar por consola
+  main_gui.py            Para ejecutar entorno grafico
+
+
 ## Requisitos e instalación
 
 - Python **3.12 o posterior**, con Tkinter. Se verificó con Python 3.13 en Windows.
