@@ -125,7 +125,7 @@ def formatearInformeCarga(carga):
   #Presentación de diagnósticos: procesos aceptados, rechazados; cada línea cuenta como un registro, aunque tenga varios errores. 
   resumen = carga["resumen"]
   lineas = ["Formato: ID TA TI tamaño (KB).",
-            f"Procesos cargados: {resumen['aceptados']}. Registros rechazados: {resumen['rechazados']}. "
+            f"Procesos cargados: {resumen['aceptados']}. Procesos rechazados: {resumen['rechazados']}. "
             f"No procesados por límite: {resumen['noProcesados']}."]
   if carga["procesos"]:
     lineas.append("Aceptados: " + ", ".join(p["id"] for p in carga["procesos"]) + ".")
@@ -138,7 +138,7 @@ def formatearInformeCarga(carga):
   for omitido in carga["noProcesados"]:
     ident = f" (ID: {omitido['id']})" if omitido["id"] else ""
     lineas.append(f"Línea {omitido['linea']}{ident}: no se procesó porque ya se alcanzó "
-                  "el máximo de procesos válidos; no se validó este registro.")
+                  "el máximo de procesos válidos; no se validó este proceso.")
   return "\n".join(lineas)
 
 
@@ -710,7 +710,7 @@ def ejecutarIteracion(mostrarConsola=True):
 
 def ejecutarConsola():
   # Ejecuta el FLUJO PRINCIPAL por CONSOLA: el menú tradicional, carga de procesos, simulacion y los informes. 
-  print("Bienvenido al simulador de Sistemas Operativos.")
+  print("     \n¡Bienvenido al simulador de Sistemas Operativos!")
   print("""Este programa simula la gestion de asignacion de memoria (de particiones variables) y planificacion de procesos con el algoritmo SRTF.
 
 > Grupo Nro 2 - Comisión: K2.1 - Integrantes:
@@ -748,6 +748,7 @@ def ejecutarConsola():
 
     elif opcion == 2:
       print("""\n           > COMENZANDO EL SIMULADOR...
+
 -Elija un formato de carga de los procesos:
   1. Cargar un archivo existente
   2. Ingresar procesos y guardarlos en un archivo nuevo
